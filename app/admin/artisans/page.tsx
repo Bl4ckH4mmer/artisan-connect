@@ -8,6 +8,7 @@ import { ArtisanProfile } from '@/types/artisan'
 import { exportArtisansToCSV } from '@/lib/admin/export'
 import { logAdminAction } from '@/lib/admin/audit'
 import AdminNav from '@/components/admin/AdminNav'
+import EditArtisanModal from '@/components/admin/EditArtisanModal'
 
 type FilterStatus = 'all' | 'active' | 'pending' | 'suspended'
 type FilterVerified = 'all' | 'verified' | 'unverified'
@@ -23,6 +24,7 @@ export default function ArtisansPage() {
     const [verifiedFilter, setVerifiedFilter] = useState<FilterVerified>('all')
     const [categoryFilter, setCategoryFilter] = useState('all')
     const [exporting, setExporting] = useState(false)
+    const [editingArtisan, setEditingArtisan] = useState<string | null>(null)
 
     useEffect(() => {
         checkAdminAccess()
@@ -325,9 +327,9 @@ export default function ArtisansPage() {
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <div className="flex items-center justify-end gap-2">
                                                     <button
-                                                        onClick={() => router.push(`/artisan/${artisan.id}`)}
+                                                        onClick={() => setEditingArtisan(artisan.id)}
                                                         className="text-blue-600 hover:text-blue-900"
-                                                        title="View Profile"
+                                                        title="Edit Artisan"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                     </button>
@@ -356,6 +358,19 @@ export default function ArtisansPage() {
                             </table>
                         </div>
                     </div>
+                )}
+
+                {/* Edit Artisan Modal */}
+                {editingArtisan && (
+                    <EditArtisanModal
+                        artisanId={editingArtisan}
+                        isOpen={!!editingArtisan}
+                        onClose={() => setEditingArtisan(null)}
+                        onSuccess={() => {
+                            setEditingArtisan(null)
+                            fetchArtisans()
+                        }}
+                    />
                 )}
             </div>
         </div>
