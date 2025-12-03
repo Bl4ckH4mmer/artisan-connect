@@ -1,0 +1,30 @@
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <AnalyticsWidget
+                        title="Total Artisans"
+                        value={stats.totalArtisans}
+                        icon={<Users className="w-6 h-6" />}
+                        color="blue"
+                        trend={trends.artisans}
+                    />
+                    <AnalyticsWidget
+                        title="Pending Approvals"
+                        value={stats.pendingApprovals}
+                        icon={<Clock className="w-6 h-6" />}
+                        color="orange"
+                    />
+                    <AnalyticsWidget
+                        title="Total Reviews"
+                        value={stats.totalReviews}
+                        icon={<MessageSquare className="w-6 h-6" />}
+                        color="green"
+                        trend={trends.reviews}
+                    />
+                    <AnalyticsWidget
+                        title="Total Contacts"
+                        value={stats.totalContacts}
+                        icon={<Phone className="w-6 h-6" />}
+                        color="purple"
+                        trend={trends.contacts}
+                    />
+                </div>

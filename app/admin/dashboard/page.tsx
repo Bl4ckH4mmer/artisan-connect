@@ -14,6 +14,7 @@ import AdminNav from '@/components/admin/AdminNav'
 import { ArtisanProfile } from '@/types/artisan'
 import { Review } from '@/types/review'
 import { logAdminAction } from '@/lib/admin/audit'
+import { calculateDashboardTrends } from '@/lib/admin/trends'
 
 export default function AdminDashboard() {
     const router = useRouter()
@@ -38,6 +39,11 @@ export default function AdminDashboard() {
         categories: []
     })
     const [topArtisans, setTopArtisans] = useState<any[]>([])
+    const [trends, setTrends] = useState({
+        artisans: { value: 0, isPositive: true },
+        reviews: { value: 0, isPositive: true },
+        contacts: { value: 0, isPositive: true }
+    })
 
     useEffect(() => {
         checkAdminAccess()
@@ -97,6 +103,14 @@ export default function AdminDashboard() {
                 totalContacts: contacts?.length || 0,
                 avgRating: Number(avgRating.toFixed(1))
             })
+
+            // Calculate Trends
+            const calculatedTrends = calculateDashboardTrends(
+                artisans || [],
+                allReviews || [],
+                contacts || []
+            )
+            setTrends(calculatedTrends)
 
             // Process Chart Data (Last 30 days)
             const last30Days = [...Array(30)].map((_, i) => {
@@ -274,6 +288,7 @@ export default function AdminDashboard() {
                         value={stats.totalArtisans}
                         icon={<Users className="w-6 h-6" />}
                         color="blue"
+                        trend={trends.artisans}
                     />
                     <AnalyticsWidget
                         title="Pending Approvals"
@@ -286,12 +301,14 @@ export default function AdminDashboard() {
                         value={stats.totalReviews}
                         icon={<MessageSquare className="w-6 h-6" />}
                         color="green"
+                        trend={trends.reviews}
                     />
                     <AnalyticsWidget
                         title="Total Contacts"
                         value={stats.totalContacts}
                         icon={<Phone className="w-6 h-6" />}
                         color="purple"
+                        trend={trends.contacts}
                     />
                 </div>
 
