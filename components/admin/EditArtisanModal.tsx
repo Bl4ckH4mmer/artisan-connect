@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { X, Save, Upload } from 'lucide-react'
 import { ArtisanCategory } from '@/types/artisan'
 import { logAdminAction } from '@/lib/admin/audit'
+import DocumentUpload from './DocumentUpload'
 
 interface EditArtisanModalProps {
     artisanId: string
@@ -20,6 +21,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string>('')
+    const [documents, setDocuments] = useState<Record<string, string>>({})
 
     const [formData, setFormData] = useState({
         business_name: '',
@@ -83,6 +85,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
             })
 
             setImagePreview(data.profile_image || '')
+            setDocuments(data.document_urls || {})
         } catch (error) {
             console.error('Error loading artisan:', error)
             alert('Failed to load artisan data')
@@ -163,6 +166,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                     verified_at: formData.is_verified ? new Date().toISOString() : null,
                     verified_by: formData.is_verified ? user.id : null,
                     admin_notes: formData.admin_notes || null,
+                    document_urls: Object.keys(documents).length > 0 ? documents : null,
                     status: formData.status,
                     updated_at: new Date().toISOString()
                 })
@@ -484,6 +488,15 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                                 rows={3}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                                 placeholder="Internal notes about this artisan..."
+                            />
+                        </div>
+
+                        {/* Verification Documents */}
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Verification Documents</h3>
+                            <DocumentUpload
+                                documents={documents}
+                                onChange={setDocuments}
                             />
                         </div>
 
