@@ -11,6 +11,7 @@ import ActivityFeed from '@/components/admin/ActivityFeed'
 import AnalyticsCharts from '@/components/admin/AnalyticsCharts'
 import TopPerformers from '@/components/admin/TopPerformers'
 import AdminNav from '@/components/admin/AdminNav'
+import ModalConversionChart from '@/components/admin/ModalConversionChart'
 import { ArtisanProfile } from '@/types/artisan'
 import { Review } from '@/types/review'
 import { logAdminAction } from '@/lib/admin/audit'
@@ -44,6 +45,12 @@ export default function AdminDashboard() {
         reviews: { value: 0, isPositive: true },
         contacts: { value: 0, isPositive: true }
     })
+    const [modalStats, setModalStats] = useState({
+        conversionRate: 0,
+        totalShown: 0,
+        totalConverted: 0
+    })
+    const [modalChartData, setModalChartData] = useState<any[]>([])
 
     useEffect(() => {
         checkAdminAccess()
@@ -52,6 +59,12 @@ export default function AdminDashboard() {
 
     const checkAdminAccess = async () => {
         const { data: { user } } = await supabase.auth.getUser()
+
+        // DEBUG: Show current user ID
+        console.log('🔍 CURRENT USER ID:', user?.id)
+        console.log('🔍 CURRENT USER EMAIL:', user?.email)
+        console.log('🔍 CURRENT USER PHONE:', user?.phone)
+
         if (!user || user.user_metadata?.role !== 'admin') {
             router.push('/')
         }
@@ -155,6 +168,32 @@ export default function AdminDashboard() {
             if (artisans) {
                 const sorted = [...artisans].sort((a, b) => b.rating - a.rating).slice(0, 5)
                 setTopArtisans(sorted)
+            }
+
+            // 3. Fetch Modal Conversion Data
+            const { data: modalEvents } = await supabase
+                .from('auth_modal_events')
+                .select('event_type, created_at')
+
+            if (modalEvents) {
+                const shown = modalEvents.filter(e => e.event_type === 'modal_shown').length
+                const converted = modalEvents.filter(e => e.event_type === 'modal_converted').length
+                const conversionRate = shown > 0 ? Math.round((converted / shown) * 100) : 0
+
+                setModalStats({
+                    conversionRate,
+                    totalShown: shown,
+                    totalConverted: converted
+                })
+
+                // Process modal chart data (last 30 days)
+                const modalData = last30Days.map(date => ({
+                    date,
+                    shown: modalEvents.filter(e => e.event_type === 'modal_shown' && e.created_at.startsWith(date)).length,
+                    converted: modalEvents.filter(e => e.event_type === 'modal_converted' && e.created_at.startsWith(date)).length,
+                    dismissed: modalEvents.filter(e => e.event_type === 'modal_dismissed' && e.created_at.startsWith(date)).length
+                }))
+                setModalChartData(modalData)
             }
 
         } catch (error) {
@@ -312,6 +351,22 @@ export default function AdminDashboard() {
                     />
                 </div>
 
+                {/* Modal Conversion Rate Widget */}
+                <div className="mb-8">
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-indigo-100 text-sm mb-1">Auth Modal Conversion Rate</p>
+                                <p className="text-4xl font-bold">{modalStats.conversionRate}%</p>
+                                <p className="text-indigo-100 text-sm mt-2">
+                                    {modalStats.totalConverted} of {modalStats.totalShown} shown
+                                </p>
+                            </div>
+                            <div className="text-6xl opacity-20">📊</div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                     {/* Charts Column */}
@@ -322,6 +377,8 @@ export default function AdminDashboard() {
                             contactEvents={chartData.contacts}
                             categoryBreakdown={chartData.categories}
                         />
+
+                        <ModalConversionChart data={modalChartData} />
 
                         {/* Pending Approvals */}
                         {pendingArtisans.length > 0 && (

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CATEGORY_ICONS } from '@/lib/constants/categories'
 import ContactButtons from '@/components/artisan/ContactButtons'
 import PortfolioGallery from '@/components/artisan/PortfolioGallery'
+import PhoneDisplay from '@/components/artisan/PhoneDisplay'
 import { notFound } from 'next/navigation'
 
 export default async function ArtisanProfilePage({
@@ -33,6 +34,7 @@ export default async function ArtisanProfilePage({
         .eq('status', 'approved')
         .order('created_at', { ascending: false })
         .limit(10)
+
 
     const categoryIcon = CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'
 
@@ -137,18 +139,7 @@ export default async function ArtisanProfilePage({
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-start gap-2">
-                                            <Phone className="w-4 h-4 text-gray-400 mt-0.5" />
-                                            <div>
-                                                <p className="text-sm text-gray-600">Phone</p>
-                                                <a
-                                                    href={`tel:${artisan.phone_number}`}
-                                                    className="font-medium text-orange-600 hover:text-orange-700"
-                                                >
-                                                    {artisan.phone_number}
-                                                </a>
-                                            </div>
-                                        </div>
+                                        <PhoneDisplay phoneNumber={artisan.phone_number} />
                                     </div>
                                 </div>
                             </div>

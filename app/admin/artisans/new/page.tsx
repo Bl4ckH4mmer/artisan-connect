@@ -8,10 +8,12 @@ import { ArtisanCategory } from '@/types/artisan'
 import { logAdminAction } from '@/lib/admin/audit'
 import AdminNav from '@/components/admin/AdminNav'
 import DocumentUpload from '@/components/admin/DocumentUpload'
+import { useToast } from '@/components/ui/Toast'
 
 export default function NewArtisanPage() {
     const router = useRouter()
     const supabase = createClient()
+    const { showToast } = useToast()
 
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -70,13 +72,13 @@ export default function NewArtisanPage() {
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file')
+            showToast('Please select an image file', 'error')
             return
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image size must be less than 5MB')
+            showToast('Image size must be less than 5MB', 'error')
             return
         }
 
@@ -155,7 +157,7 @@ export default function NewArtisanPage() {
             router.push('/admin/artisans')
         } catch (error: any) {
             console.error('Error creating artisan:', error)
-            alert('Failed to create artisan: ' + error.message)
+            showToast('Failed to create artisan: ' + error.message, 'error')
         } finally {
             setLoading(false)
         }

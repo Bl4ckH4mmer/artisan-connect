@@ -33,7 +33,21 @@ export default function ArtisansPage() {
 
     const checkAdminAccess = async () => {
         const { data: { user } } = await supabase.auth.getUser()
-        if (!user || user.user_metadata?.role !== 'admin') {
+
+        if (!user) {
+            router.push('/')
+            return
+        }
+
+        // Check if user exists in admin_users table
+        const { data: adminUsers, error } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('id', user.id)
+
+        // If no admin record found or error, redirect
+        if (error || !adminUsers || adminUsers.length === 0) {
+            console.error('Admin check failed:', error)
             router.push('/')
         }
     }

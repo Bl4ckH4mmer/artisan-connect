@@ -2,13 +2,14 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Users, Activity, LogOut, FileText } from 'lucide-react'
+import { LayoutDashboard, Users, Activity, LogOut, FileText, TrendingUp } from 'lucide-react'
 
 export default function AdminNav() {
     const pathname = usePathname()
 
     const navItems = [
         { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
         { href: '/admin/artisans', label: 'Artisans', icon: Users },
         { href: '/admin/activity', label: 'Activity Log', icon: Activity },
         { href: '/admin/reports', label: 'Reports', icon: FileText },
@@ -41,7 +42,7 @@ export default function AdminNav() {
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
-                                        {item.label}
+                                        <span className="hidden md:inline">{item.label}</span>
                                     </Link>
                                 )
                             })}
@@ -53,7 +54,7 @@ export default function AdminNav() {
                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
                     >
                         <LogOut className="w-4 h-4" />
-                        Exit Admin
+                        <span className="hidden md:inline">Exit Admin</span>
                     </a>
                 </div>
             </div>

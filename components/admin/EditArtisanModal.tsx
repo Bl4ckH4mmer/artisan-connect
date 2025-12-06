@@ -6,6 +6,7 @@ import { X, Save, Upload } from 'lucide-react'
 import { ArtisanCategory } from '@/types/artisan'
 import { logAdminAction } from '@/lib/admin/audit'
 import DocumentUpload from './DocumentUpload'
+import { useToast } from '@/components/ui/Toast'
 
 interface EditArtisanModalProps {
     artisanId: string
@@ -16,6 +17,7 @@ interface EditArtisanModalProps {
 
 export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess }: EditArtisanModalProps) {
     const supabase = createClient()
+    const { showToast } = useToast()
     const [loading, setLoading] = useState(false)
     const [loadingData, setLoadingData] = useState(true)
     const [errors, setErrors] = useState<Record<string, string>>({})
@@ -88,7 +90,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
             setDocuments(data.document_urls || {})
         } catch (error) {
             console.error('Error loading artisan:', error)
-            alert('Failed to load artisan data')
+            showToast('Failed to load artisan data', 'error')
         } finally {
             setLoadingData(false)
         }
@@ -115,12 +117,12 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
         if (!file) return
 
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file')
+            showToast('Please select an image file', 'error')
             return
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image size must be less than 5MB')
+            showToast('Image size must be less than 5MB', 'error')
             return
         }
 
@@ -189,7 +191,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
             onClose()
         } catch (error: any) {
             console.error('Error updating artisan:', error)
-            alert('Failed to update artisan: ' + error.message)
+            showToast('Failed to update artisan: ' + error.message, 'error')
         } finally {
             setLoading(false)
         }

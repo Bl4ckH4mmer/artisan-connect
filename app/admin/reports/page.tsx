@@ -7,10 +7,12 @@ import { createClient } from '@/lib/supabase/client'
 import { generateMonthlySummaryPDF } from '@/lib/admin/export'
 import { logAdminAction } from '@/lib/admin/audit'
 import AdminNav from '@/components/admin/AdminNav'
+import { useToast } from '@/components/ui/Toast'
 
 export default function ReportsPage() {
     const router = useRouter()
     const supabase = createClient()
+    const { showToast } = useToast()
 
     const [generating, setGenerating] = useState(false)
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
@@ -54,10 +56,10 @@ export default function ReportsPage() {
                 }
             })
 
-            alert('Report generated successfully!')
+            showToast('Report generated successfully!', 'success')
         } catch (error) {
             console.error('Error generating report:', error)
-            alert('Failed to generate report')
+            showToast('Failed to generate report', 'error')
         } finally {
             setGenerating(false)
         }
