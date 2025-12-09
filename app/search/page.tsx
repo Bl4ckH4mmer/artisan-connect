@@ -1,23 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Search, MapPin, Star, Filter, X, Shield } from 'lucide-react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Search, MapPin, Filter, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ARTISAN_CATEGORIES, CATEGORY_ICONS } from '@/lib/constants/categories'
 import { ESTATE_ZONES } from '@/lib/constants/locations'
 import { ArtisanProfile } from '@/types/artisan'
+import HeroBanner from '@/components/search/HeroBanner'
+import FeaturedArtisans from '@/components/search/FeaturedArtisans'
+import CategoryBrowser from '@/components/search/CategoryBrowser'
+import ArtisanCard from '@/components/search/ArtisanCard'
 
 type SortOption = 'rating' | 'reviews' | 'contacts' | 'verified';
 
-export default function SearchPage() {
+function SearchPageContent() {
+  const searchParams = useSearchParams()
+  const categoryParam = searchParams.get('category')
+
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam || '')
   const [selectedZone, setSelectedZone] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rating')
   const [showFilters, setShowFilters] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
 
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([])
   const [filteredArtisans, setFilteredArtisans] = useState<ArtisanProfile[]>([])
+  const [featuredArtisans, setFeaturedArtisans] = useState<ArtisanProfile[]>([])
   const [loading, setLoading] = useState(true)
 
   const supabase = createClient()
@@ -33,8 +43,16 @@ export default function SearchPage() {
       if (error) {
         console.error('Error fetching artisans:', error)
       } else {
-        setArtisans((data as ArtisanProfile[]) || [])
-        setFilteredArtisans((data as ArtisanProfile[]) || [])
+        const artisanData = (data as ArtisanProfile[]) || []
+        setArtisans(artisanData)
+        setFilteredArtisans(artisanData)
+
+        // Get top-rated artisans for featured section (rating >= 4.0 or top 8)
+        const featured = artisanData
+          .filter(a => a.rating >= 4.0)
+          .sort((a, b) => b.rating - a.rating)
+          .slice(0, 8)
+        setFeaturedArtisans(featured)
       }
     } catch (error) {
       console.error('Error:', error)
@@ -100,9 +118,9 @@ export default function SearchPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full mx-auto mb-4" />
+          <div className="animate-spin w-12 h-12 border-4 border-[#C75B39] border-t-transparent rounded-full mx-auto mb-4" />
           <p className="text-gray-600">Finding local artisans...</p>
         </div>
       </div>
@@ -110,29 +128,31 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FAF7F2]">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${isSearchFocused && searchQuery.length > 0 ? 'text-white/70' : 'text-gray-400'}`} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, category, or skills..."
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none"
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                placeholder="Search artisans or products..."
+                className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${isSearchFocused && searchQuery.length > 0 ? 'bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60' : 'bg-[#FAF7F2] border-transparent focus:border-[#C75B39] focus:bg-white'}`}
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="relative px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center gap-2 font-medium transition-all"
+              className="relative px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"
             >
               <Filter className="w-5 h-5" />
               Filters
               {activeFiltersCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#C75B39] text-white text-xs rounded-full flex items-center justify-center">
                   {activeFiltersCount}
                 </span>
               )}
@@ -150,7 +170,7 @@ export default function SearchPage() {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C75B39] focus:outline-none"
                   >
                     <option value="">All Categories</option>
                     {ARTISAN_CATEGORIES.map(cat => (
@@ -168,7 +188,7 @@ export default function SearchPage() {
                   <select
                     value={selectedZone}
                     onChange={(e) => setSelectedZone(e.target.value)}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C75B39] focus:outline-none"
                   >
                     <option value="">All Zones</option>
                     {ESTATE_ZONES.map(zone => (
@@ -184,7 +204,7 @@ export default function SearchPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#C75B39] focus:outline-none"
                   >
                     <option value="rating">Highest Rated</option>
                     <option value="reviews">Most Reviews</option>
@@ -197,7 +217,7 @@ export default function SearchPage() {
               {activeFiltersCount > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="mt-4 text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
+                  className="mt-4 text-sm text-[#C75B39] hover:text-[#D97642] font-medium flex items-center gap-1"
                 >
                   <X className="w-4 h-4" />
                   Clear all filters
@@ -209,100 +229,111 @@ export default function SearchPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Local Artisans</h1>
-          <p className="text-gray-600">
-            {filteredArtisans.length} artisan{filteredArtisans.length !== 1 ? 's' : ''} found
-            {selectedCategory && ` in ${selectedCategory}`}
-            {selectedZone && ` in ${selectedZone}`}
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        {/* Hero Banner */}
+        {!searchQuery && !selectedCategory && !selectedZone && (
+          <HeroBanner />
+        )}
 
-        {/* Active Filters */}
-        {activeFiltersCount > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            {selectedCategory && (
-              <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium flex items-center gap-2">
-                {CATEGORY_ICONS[selectedCategory as keyof typeof CATEGORY_ICONS]} {selectedCategory}
-                <button onClick={() => setSelectedCategory('')}>
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
-            {selectedZone && (
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
-                <MapPin className="w-3 h-3" /> {selectedZone}
-                <button onClick={() => setSelectedZone('')}>
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )}
+        {/* Featured Artisans */}
+        {!searchQuery && !selectedCategory && !selectedZone && featuredArtisans.length > 0 && (
+          <FeaturedArtisans artisans={featuredArtisans} />
+        )}
+
+        {/* Category Browser */}
+        {!searchQuery && !selectedCategory && (
+          <CategoryBrowser
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+          />
+        )}
+
+        {/* Active Filters Summary */}
+        {(searchQuery || activeFiltersCount > 0) && (
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {filteredArtisans.length} artisan{filteredArtisans.length !== 1 ? 's' : ''} found
+                </h2>
+                {(selectedCategory || selectedZone) && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {selectedCategory && `in ${selectedCategory}`}
+                    {selectedCategory && selectedZone && ' • '}
+                    {selectedZone && selectedZone}
+                  </p>
+                )}
+              </div>
+
+              {/* Active Filter Chips */}
+              <div className="flex flex-wrap gap-2">
+                {selectedCategory && (
+                  <span className="px-3 py-1.5 bg-[#FFF8F0] text-[#8B4513] rounded-full text-sm font-medium flex items-center gap-2">
+                    {CATEGORY_ICONS[selectedCategory as keyof typeof CATEGORY_ICONS]} {selectedCategory}
+                    <button onClick={() => setSelectedCategory('')} className="hover:bg-[#FAE1D5] rounded-full p-0.5">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                )}
+                {selectedZone && (
+                  <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5" /> {selectedZone}
+                    <button onClick={() => setSelectedZone('')} className="hover:bg-blue-200 rounded-full p-0.5">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
+        {/* Artisans Grid */}
         {filteredArtisans.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 mb-4">No artisans found matching your criteria</p>
+          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No artisans found</h3>
+            <p className="text-gray-600 mb-6">Try adjusting your search or filters</p>
             <button
               onClick={clearFilters}
-              className="text-orange-600 hover:text-orange-700 font-medium"
+              className="px-6 py-2.5 bg-[#C75B39] text-white rounded-lg hover:bg-[#D97642] font-medium transition-colors"
             >
-              Clear filters
+              Clear all filters
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredArtisans.map((artisan) => (
-              <a
-                key={artisan.id}
-                href={`/artisan/${artisan.id}`}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 cursor-pointer"
-              >
-                <div className="w-full h-32 bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg mb-4 flex items-center justify-center text-5xl">
-                  {CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'}
-                </div>
-
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-bold text-lg text-gray-900 flex-1">{artisan.business_name}</h3>
-                  {artisan.is_verified && (
-                    <Shield className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                  )}
-                </div>
-
-                <p className="text-sm text-gray-600 mb-3">{artisan.category}</p>
-
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="font-semibold">{artisan.rating.toFixed(1)}</span>
-                  <span>({artisan.total_reviews} reviews)</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                  <MapPin className="w-4 h-4" />
-                  <span>{artisan.estate_zone}</span>
-                </div>
-
-                {artisan.total_contacts > 0 && (
-                  <div className="text-xs text-gray-500 mb-4">
-                    {artisan.total_contacts} people contacted
-                  </div>
-                )}
-
-                <div className="w-full py-2 bg-orange-500 text-white text-center rounded-lg hover:bg-orange-600 font-medium">
-                  View Profile
-                </div>
-              </a>
+              <ArtisanCard key={artisan.id} artisan={artisan} />
             ))}
           </div>
         )}
 
-        <div className="text-center mt-8">
-          <a href="/" className="text-sm text-gray-600 hover:text-gray-900">
+        {/* Back to Home Link */}
+        <div className="text-center pt-4">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
             ← Back to Home
           </a>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-[#C75B39] border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-600">Loading search...</p>
+        </div>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   )
 }

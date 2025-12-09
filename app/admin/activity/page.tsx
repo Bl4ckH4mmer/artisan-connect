@@ -7,10 +7,12 @@ import { Search, Filter, Download, Calendar, Activity, User, FileText } from 'lu
 import { AuditLog, searchAuditLogs, formatAuditAction, getRelativeTime, logAdminAction } from '@/lib/admin/audit'
 import { exportAuditLogsToCSV } from '@/lib/admin/export'
 import AdminNav from '@/components/admin/AdminNav'
+import { useToast } from '@/components/ui/Toast'
 
 export default function ActivityLogPage() {
     const router = useRouter()
     const supabase = createClient()
+    const { showToast } = useToast()
 
     const [logs, setLogs] = useState<AuditLog[]>([])
     const [loading, setLoading] = useState(true)
@@ -102,7 +104,7 @@ export default function ActivityLogPage() {
             })
         } catch (error) {
             console.error('Export failed:', error)
-            alert('Failed to export audit logs')
+            showToast('Failed to export audit logs', 'error')
         } finally {
             setExporting(false)
         }

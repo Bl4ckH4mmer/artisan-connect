@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CATEGORY_ICONS } from '@/lib/constants/categories'
 import ContactButtons from '@/components/artisan/ContactButtons'
 import PortfolioGallery from '@/components/artisan/PortfolioGallery'
+import PhoneDisplay from '@/components/artisan/PhoneDisplay'
 import { notFound } from 'next/navigation'
 
 export default async function ArtisanProfilePage({
@@ -34,12 +35,13 @@ export default async function ArtisanProfilePage({
         .order('created_at', { ascending: false })
         .limit(10)
 
+
     const categoryIcon = CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Banner */}
-            <div className="h-64 bg-gradient-to-br from-orange-400 via-amber-500 to-orange-600 flex items-center justify-center text-8xl">
+            <div className="h-64 bg-gradient-to-br from-[#C75B39] via-[#D97642] to-[#B04A2C] flex items-center justify-center text-8xl">
                 {categoryIcon}
             </div>
 
@@ -47,9 +49,9 @@ export default async function ArtisanProfilePage({
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Column - Profile Card */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6">
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6 z-10">
                             {/* Profile Image */}
-                            <div className="relative">
+                            <div className="relative" suppressHydrationWarning>
                                 {artisan.profile_image ? (
                                     <img
                                         src={artisan.profile_image}
@@ -75,7 +77,7 @@ export default async function ArtisanProfilePage({
                                 <p className="text-gray-600 mb-4">{artisan.artisan_name}</p>
 
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+                                    <span className="px-3 py-1 bg-[#FFF8F0] text-[#8B4513] rounded-full text-sm font-medium">
                                         {categoryIcon} {artisan.category}
                                     </span>
                                     {artisan.is_verified && (
@@ -137,18 +139,7 @@ export default async function ArtisanProfilePage({
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-start gap-2">
-                                            <Phone className="w-4 h-4 text-gray-400 mt-0.5" />
-                                            <div>
-                                                <p className="text-sm text-gray-600">Phone</p>
-                                                <a
-                                                    href={`tel:${artisan.phone_number}`}
-                                                    className="font-medium text-orange-600 hover:text-orange-700"
-                                                >
-                                                    {artisan.phone_number}
-                                                </a>
-                                            </div>
-                                        </div>
+                                        <PhoneDisplay phoneNumber={artisan.phone_number} />
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +162,7 @@ export default async function ArtisanProfilePage({
                                     {artisan.skills.map((skill: string, index: number) => (
                                         <span
                                             key={index}
-                                            className="px-4 py-2 bg-orange-50 text-orange-700 rounded-lg font-medium"
+                                            className="px-4 py-2 bg-[#FFF8F0] text-[#8B4513] rounded-lg font-medium"
                                         >
                                             {skill}
                                         </span>
@@ -216,7 +207,7 @@ export default async function ArtisanProfilePage({
                                                                 <Star
                                                                     key={i}
                                                                     className={`w-4 h-4 ${i < review.rating
-                                                                        ? 'text-amber-500 fill-amber-500'
+                                                                        ? 'text-[#E89560] fill-[#E89560]'
                                                                         : 'text-gray-300'
                                                                         }`}
                                                                 />

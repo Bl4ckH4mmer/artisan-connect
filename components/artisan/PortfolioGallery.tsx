@@ -36,7 +36,7 @@ export default function PortfolioGallery({ images }: PortfolioGalleryProps) {
 
     return (
         <>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 relative z-0">
                 {images.map((image, index) => (
                     <div
                         key={index}

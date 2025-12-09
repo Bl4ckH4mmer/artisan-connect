@@ -3,6 +3,45 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ========================================
+     WARM PALETTE (Customer-Facing)
+     Artisan marketplace, craftsmanship, authenticity
+     ======================================== */
+  --warm-primary: #C75B39;        /* Terracotta - Primary CTAs, highlights */
+  --warm-secondary: #D97642;      /* Burnt orange - Secondary actions, hover */
+  --warm-accent: #E89560;         /* Peach-orange - Accents, badges */
+  --warm-bg-light: #FAF7F2;       /* Cream - Page backgrounds */
+  --warm-bg-card: #FFFFFF;        /* White - Card backgrounds */
+  --warm-text-dark: #6B4423;      /* Brown - Primary text */
+  --warm-text-medium: #8B4513;    /* Medium brown - Secondary text */
+
+  /* ========================================
+     BLUE PALETTE (Business/Admin)
+     Trust, professionalism, stability
+     ======================================== */
+  --blue-primary: #1E3A8A;        /* Navy - Headers, navigation */
+  --blue-accent: #3B82F6;         /* Bright blue - Primary CTAs, links */
+  --blue-light: #DBEAFE;          /* Light blue - Backgrounds, highlights */
+  --blue-dark: #1F2937;           /* Dark grey-blue - Text, headings */
+  --blue-bg: #F3F4F6;             /* Light grey - Page backgrounds */
+  --blue-bg-light: #EFF6FF;       /* Very light blue - Subtle backgrounds */
+
+  /* ========================================
+     NEUTRAL PALETTE (Shared)
+     Used across both contexts
+     ======================================== */
+  --neutral-white: #FFFFFF;
+  --neutral-50: #F9FAFB;
+  --neutral-100: #F3F4F6;
+  --neutral-200: #E5E7EB;
+  --neutral-300: #D1D5DB;
+  --neutral-400: #9CA3AF;
+  --neutral-500: #6B7280;
+  --neutral-600: #4B5563;
+  --neutral-700: #374151;
+  --neutral-800: #1F2937;
+  --neutral-900: #111827;
 }
 
 @theme inline {
@@ -78,4 +117,19 @@ textarea::placeholder {
     /* gray-400 */
     -webkit-text-fill-color: #9ca3af !important;
   }
+}
+/* Toast animations */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
 }

@@ -11,9 +11,11 @@ import ActivityFeed from '@/components/admin/ActivityFeed'
 import AnalyticsCharts from '@/components/admin/AnalyticsCharts'
 import TopPerformers from '@/components/admin/TopPerformers'
 import AdminNav from '@/components/admin/AdminNav'
+import ModalConversionChart from '@/components/admin/ModalConversionChart'
 import { ArtisanProfile } from '@/types/artisan'
 import { Review } from '@/types/review'
 import { logAdminAction } from '@/lib/admin/audit'
+import { calculateDashboardTrends } from '@/lib/admin/trends'
 
 export default function AdminDashboard() {
     const router = useRouter()
@@ -38,6 +40,17 @@ export default function AdminDashboard() {
         categories: []
     })
     const [topArtisans, setTopArtisans] = useState<any[]>([])
+    const [trends, setTrends] = useState({
+        artisans: { value: 0, isPositive: true },
+        reviews: { value: 0, isPositive: true },
+        contacts: { value: 0, isPositive: true }
+    })
+    const [modalStats, setModalStats] = useState({
+        conversionRate: 0,
+        totalShown: 0,
+        totalConverted: 0
+    })
+    const [modalChartData, setModalChartData] = useState<any[]>([])
 
     useEffect(() => {
         checkAdminAccess()
@@ -46,6 +59,12 @@ export default function AdminDashboard() {
 
     const checkAdminAccess = async () => {
         const { data: { user } } = await supabase.auth.getUser()
+
+        // DEBUG: Show current user ID
+        console.log('🔍 CURRENT USER ID:', user?.id)
+        console.log('🔍 CURRENT USER EMAIL:', user?.email)
+        console.log('🔍 CURRENT USER PHONE:', user?.phone)
+
         if (!user || user.user_metadata?.role !== 'admin') {
             router.push('/')
         }
@@ -98,6 +117,14 @@ export default function AdminDashboard() {
                 avgRating: Number(avgRating.toFixed(1))
             })
 
+            // Calculate Trends
+            const calculatedTrends = calculateDashboardTrends(
+                artisans || [],
+                allReviews || [],
+                contacts || []
+            )
+            setTrends(calculatedTrends)
+
             // Process Chart Data (Last 30 days)
             const last30Days = [...Array(30)].map((_, i) => {
                 const d = new Date()
@@ -141,6 +168,32 @@ export default function AdminDashboard() {
             if (artisans) {
                 const sorted = [...artisans].sort((a, b) => b.rating - a.rating).slice(0, 5)
                 setTopArtisans(sorted)
+            }
+
+            // 3. Fetch Modal Conversion Data
+            const { data: modalEvents } = await supabase
+                .from('auth_modal_events')
+                .select('event_type, created_at')
+
+            if (modalEvents) {
+                const shown = modalEvents.filter(e => e.event_type === 'modal_shown').length
+                const converted = modalEvents.filter(e => e.event_type === 'modal_converted').length
+                const conversionRate = shown > 0 ? Math.round((converted / shown) * 100) : 0
+
+                setModalStats({
+                    conversionRate,
+                    totalShown: shown,
+                    totalConverted: converted
+                })
+
+                // Process modal chart data (last 30 days)
+                const modalData = last30Days.map(date => ({
+                    date,
+                    shown: modalEvents.filter(e => e.event_type === 'modal_shown' && e.created_at.startsWith(date)).length,
+                    converted: modalEvents.filter(e => e.event_type === 'modal_converted' && e.created_at.startsWith(date)).length,
+                    dismissed: modalEvents.filter(e => e.event_type === 'modal_dismissed' && e.created_at.startsWith(date)).length
+                }))
+                setModalChartData(modalData)
             }
 
         } catch (error) {
@@ -255,7 +308,7 @@ export default function AdminDashboard() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    <div className="animate-spin w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
                     <p className="text-gray-600">Loading dashboard...</p>
                 </div>
             </div>
@@ -274,25 +327,44 @@ export default function AdminDashboard() {
                         value={stats.totalArtisans}
                         icon={<Users className="w-6 h-6" />}
                         color="blue"
+                        trend={trends.artisans}
                     />
                     <AnalyticsWidget
                         title="Pending Approvals"
                         value={stats.pendingApprovals}
                         icon={<Clock className="w-6 h-6" />}
-                        color="orange"
+                        color="indigo"
                     />
                     <AnalyticsWidget
                         title="Total Reviews"
                         value={stats.totalReviews}
                         icon={<MessageSquare className="w-6 h-6" />}
                         color="green"
+                        trend={trends.reviews}
                     />
                     <AnalyticsWidget
                         title="Total Contacts"
                         value={stats.totalContacts}
                         icon={<Phone className="w-6 h-6" />}
                         color="purple"
+                        trend={trends.contacts}
                     />
+                </div>
+
+                {/* Modal Conversion Rate Widget */}
+                <div className="mb-8">
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-indigo-100 text-sm mb-1">Auth Modal Conversion Rate</p>
+                                <p className="text-4xl font-bold">{modalStats.conversionRate}%</p>
+                                <p className="text-indigo-100 text-sm mt-2">
+                                    {modalStats.totalConverted} of {modalStats.totalShown} shown
+                                </p>
+                            </div>
+                            <div className="text-6xl opacity-20">📊</div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Content Grid */}
@@ -305,6 +377,8 @@ export default function AdminDashboard() {
                             contactEvents={chartData.contacts}
                             categoryBreakdown={chartData.categories}
                         />
+
+                        <ModalConversionChart data={modalChartData} />
 
                         {/* Pending Approvals */}
                         {pendingArtisans.length > 0 && (
