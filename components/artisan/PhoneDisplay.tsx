@@ -46,14 +46,14 @@ export default function PhoneDisplay({ phoneNumber }: PhoneDisplayProps) {
                 {isLoggedIn ? (
                     <a
                         href={`tel:${phoneNumber}`}
-                        className="font-medium text-orange-600 hover:text-orange-700"
+                        className="font-medium text-[#C75B39] hover:text-[#D97642]"
                     >
                         {displayPhoneNumber}
                     </a>
                 ) : (
                     <div>
                         <p className="font-medium text-gray-900">{displayPhoneNumber}</p>
-                        <p className="text-xs text-orange-600 mt-1">Login to view full number</p>
+                        <p className="text-xs text-[#C75B39] mt-1">Login to view full number</p>
                     </div>
                 )}
             </div>

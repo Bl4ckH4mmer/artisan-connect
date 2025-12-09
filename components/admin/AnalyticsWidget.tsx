@@ -10,7 +10,7 @@ interface AnalyticsWidgetProps {
         value: number
         isPositive: boolean
     }
-    color: 'blue' | 'orange' | 'green' | 'red' | 'purple'
+    color: 'blue' | 'orange' | 'green' | 'red' | 'purple' | 'indigo' | 'cyan'
 }
 
 const colorClasses = {
@@ -38,6 +38,16 @@ const colorClasses = {
         bg: 'bg-purple-100',
         text: 'text-purple-600',
         border: 'border-purple-500'
+    },
+    indigo: {
+        bg: 'bg-indigo-100',
+        text: 'text-indigo-600',
+        border: 'border-indigo-500'
+    },
+    cyan: {
+        bg: 'bg-cyan-100',
+        text: 'text-cyan-600',
+        border: 'border-cyan-500'
     }
 }
 

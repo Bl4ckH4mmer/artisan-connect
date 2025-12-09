@@ -98,8 +98,8 @@ export async function getUserEngagementMetrics(): Promise<UserEngagementMetrics>
     // Get all contact events
     const { data: contacts } = await supabase
         .from('contact_events')
-        .select('buyer_user_id, contacted_at')
-        .order('contacted_at', { ascending: true })
+        .select('buyer_id, created_at')
+        .order('created_at', { ascending: true })
 
     if (!contacts || contacts.length === 0) {
         return {
@@ -114,14 +114,14 @@ export async function getUserEngagementMetrics(): Promise<UserEngagementMetrics>
     }
 
     // Calculate unique users from contact events
-    const uniqueUsers = new Set(contacts.map(c => c.buyer_user_id))
+    const uniqueUsers = new Set(contacts.map(c => c.buyer_id))
     const totalUsers = uniqueUsers.size
 
     // Calculate time to first contact
     const userFirstContact = new Map<string, Date>()
     contacts.forEach(contact => {
-        if (!userFirstContact.has(contact.buyer_user_id)) {
-            userFirstContact.set(contact.buyer_user_id, new Date(contact.contacted_at))
+        if (!userFirstContact.has(contact.buyer_id)) {
+            userFirstContact.set(contact.buyer_id, new Date(contact.created_at))
         }
     })
 
@@ -137,8 +137,8 @@ export async function getUserEngagementMetrics(): Promise<UserEngagementMetrics>
     const userContactCounts = new Map<string, number>()
     contacts.forEach(contact => {
         userContactCounts.set(
-            contact.buyer_user_id,
-            (userContactCounts.get(contact.buyer_user_id) || 0) + 1
+            contact.buyer_id,
+            (userContactCounts.get(contact.buyer_id) || 0) + 1
         )
     })
 
@@ -152,9 +152,9 @@ export async function getUserEngagementMetrics(): Promise<UserEngagementMetrics>
     const day7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-    const uniqueUsersDay1 = new Set(contacts.filter(c => new Date(c.contacted_at) >= day1).map(c => c.buyer_user_id))
-    const uniqueUsersDay7 = new Set(contacts.filter(c => new Date(c.contacted_at) >= day7).map(c => c.buyer_user_id))
-    const uniqueUsersDay30 = new Set(contacts.filter(c => new Date(c.contacted_at) >= day30).map(c => c.buyer_user_id))
+    const uniqueUsersDay1 = new Set(contacts.filter(c => new Date(c.created_at) >= day1).map(c => c.buyer_id))
+    const uniqueUsersDay7 = new Set(contacts.filter(c => new Date(c.created_at) >= day7).map(c => c.buyer_id))
+    const uniqueUsersDay30 = new Set(contacts.filter(c => new Date(c.created_at) >= day30).map(c => c.buyer_id))
 
     return {
         totalUsers,
@@ -176,9 +176,9 @@ export async function getEngagementFunnel(): Promise<EngagementFunnel> {
     // Get users who made contact
     const { data: contacts } = await supabase
         .from('contact_events')
-        .select('buyer_user_id')
+        .select('buyer_id')
 
-    const uniqueContactUsers = new Set(contacts?.map(c => c.buyer_user_id) || [])
+    const uniqueContactUsers = new Set(contacts?.map(c => c.buyer_id) || [])
     const firstContact = uniqueContactUsers.size
     // Use contact users as proxy for signups
     const signups = firstContact
@@ -186,9 +186,9 @@ export async function getEngagementFunnel(): Promise<EngagementFunnel> {
     // Get users who submitted reviews
     const { data: reviews } = await supabase
         .from('reviews')
-        .select('buyer_user_id')
+        .select('buyer_id')
 
-    const uniqueReviewUsers = new Set(reviews?.map(r => r.buyer_user_id) || [])
+    const uniqueReviewUsers = new Set(reviews?.map(r => r.buyer_id) || [])
     const reviewSubmission = uniqueReviewUsers.size
 
     return {

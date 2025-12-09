@@ -20,6 +20,7 @@ export default function OTPVerification({
 }: OTPVerificationProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [resendTimer, setResendTimer] = useState(60)
+    const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
     const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
     useEffect(() => {
@@ -87,11 +88,22 @@ export default function OTPVerification({
         onResend()
     }
 
+    // Helper to get className for each OTP input
+    const getInputClassName = (index: number, digit: string) => {
+        const isActive = focusedIndex === index && digit.length > 0
+        const baseClasses = 'w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:outline-none transition-all'
+
+        if (isActive) {
+            return `${baseClasses} bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39]`
+        }
+        return `${baseClasses} border-gray-200 focus:border-blue-500`
+    }
+
     return (
         <div className="space-y-6">
             <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4">
-                    <Shield className="w-8 h-8 text-orange-600" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                    <Shield className="w-8 h-8 text-blue-600" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Verify Your Phone
@@ -117,7 +129,9 @@ export default function OTPVerification({
                             value={digit}
                             onChange={(e) => handleChange(index, e.target.value)}
                             onKeyDown={(e) => handleKeyDown(index, e)}
-                            className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-all"
+                            onFocus={() => setFocusedIndex(index)}
+                            onBlur={() => setFocusedIndex(null)}
+                            className={getInputClassName(index, digit)}
                             disabled={loading}
                         />
                     ))}
@@ -133,7 +147,7 @@ export default function OTPVerification({
             <button
                 onClick={() => onVerify(otp.join(''))}
                 disabled={loading || otp.some(digit => digit === '')}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
                 {loading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -148,12 +162,12 @@ export default function OTPVerification({
             <div className="text-center">
                 {resendTimer > 0 ? (
                     <p className="text-sm text-gray-600">
-                        Resend code in <span className="font-semibold text-orange-600">{resendTimer}s</span>
+                        Resend code in <span className="font-semibold text-blue-600">{resendTimer}s</span>
                     </p>
                 ) : (
                     <button
                         onClick={handleResend}
-                        className="text-sm text-orange-600 hover:text-orange-700 font-semibold"
+                        className="text-sm text-blue-600 hover:text-blue-700 font-semibold"
                     >
                         Resend Code
                     </button>

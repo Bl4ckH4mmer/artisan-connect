@@ -9,6 +9,17 @@ import { createClient } from '@/lib/supabase/client'
 import { uploadImage, uploadMultipleImages } from '@/lib/storage/upload'
 import { ArtisanCategory } from '@/types/artisan'
 
+// Helper to get input class based on focus state
+const getInputClassName = (fieldName: string, value: string, focusedField: string | null) => {
+  const isActive = focusedField === fieldName && value.length > 0
+  const baseClasses = 'w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all'
+
+  if (isActive) {
+    return `${baseClasses} bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
+  }
+  return `${baseClasses} border-gray-200 focus:border-blue-500`
+}
+
 export default function ArtisanOnboardPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
@@ -30,6 +41,7 @@ export default function ArtisanOnboardPage() {
   })
 
   const [skillInput, setSkillInput] = useState('')
+  const [focusedField, setFocusedField] = useState<string | null>(null)
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string>('')
   const [portfolioImages, setPortfolioImages] = useState<File[]>([])
@@ -154,10 +166,10 @@ export default function ArtisanOnboardPage() {
   const totalSteps = 4
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-neutral-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-4 shadow-lg">
             <Store className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Artisan Onboarding</h1>
@@ -171,12 +183,12 @@ export default function ArtisanOnboardPage() {
               <div className="flex items-center justify-between mb-2">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= i ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-500'
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= i ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
                       }`}>
                       {i}
                     </div>
                     {i < 4 && (
-                      <div className={`flex-1 h-1 mx-2 ${step > i ? 'bg-orange-500' : 'bg-gray-200'
+                      <div className={`flex-1 h-1 mx-2 ${step > i ? 'bg-blue-600' : 'bg-gray-200'
                         }`} />
                     )}
                   </div>
@@ -204,8 +216,10 @@ export default function ArtisanOnboardPage() {
                   type="text"
                   value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                  onFocus={() => setFocusedField('businessName')}
+                  onBlur={() => setFocusedField(null)}
                   placeholder="e.g., John's Electrical Services"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  className={getInputClassName('businessName', formData.businessName, focusedField)}
                 />
               </div>
 
@@ -217,8 +231,10 @@ export default function ArtisanOnboardPage() {
                   type="text"
                   value={formData.artisanName}
                   onChange={(e) => setFormData({ ...formData, artisanName: e.target.value })}
+                  onFocus={() => setFocusedField('artisanName')}
+                  onBlur={() => setFocusedField(null)}
                   placeholder="e.g., John Okafor"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  className={getInputClassName('artisanName', formData.artisanName, focusedField)}
                 />
               </div>
 
@@ -230,8 +246,10 @@ export default function ArtisanOnboardPage() {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  onFocus={() => setFocusedField('phoneNumber')}
+                  onBlur={() => setFocusedField(null)}
                   placeholder="+234 803 456 7890"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  className={getInputClassName('phoneNumber', formData.phoneNumber, focusedField)}
                 />
               </div>
 
@@ -243,8 +261,10 @@ export default function ArtisanOnboardPage() {
                   type="tel"
                   value={formData.whatsappNumber}
                   onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
+                  onFocus={() => setFocusedField('whatsappNumber')}
+                  onBlur={() => setFocusedField(null)}
                   placeholder="Leave blank if same as phone number"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  className={getInputClassName('whatsappNumber', formData.whatsappNumber, focusedField)}
                 />
               </div>
 
@@ -269,7 +289,7 @@ export default function ArtisanOnboardPage() {
               <button
                 onClick={() => setStep(2)}
                 disabled={!formData.businessName || !formData.artisanName || !formData.phoneNumber || !formData.category}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Continue
               </button>
@@ -292,7 +312,7 @@ export default function ArtisanOnboardPage() {
                 <select
                   value={formData.estateZone}
                   onChange={(e) => setFormData({ ...formData, estateZone: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" style={{ color: '#111827' }}
                 >
                   <option value="">Select your zone</option>
                   {ESTATE_ZONES.map(zone => (
@@ -310,7 +330,9 @@ export default function ArtisanOnboardPage() {
                     type="text"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                    onFocus={() => setFocusedField('city')}
+                    onBlur={() => setFocusedField(null)}
+                    className={getInputClassName('city', formData.city, focusedField)}
                   />
                 </div>
 
@@ -340,7 +362,9 @@ export default function ArtisanOnboardPage() {
                   max="50"
                   value={formData.experienceYears}
                   onChange={(e) => setFormData({ ...formData, experienceYears: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none" style={{ color: '#111827' }}
+                  onFocus={() => setFocusedField('experienceYears')}
+                  onBlur={() => setFocusedField(null)}
+                  className={getInputClassName('experienceYears', String(formData.experienceYears), focusedField)}
                 />
               </div>
 
@@ -351,16 +375,18 @@ export default function ArtisanOnboardPage() {
                 <textarea
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onFocus={() => setFocusedField('bio')}
+                  onBlur={() => setFocusedField(null)}
                   placeholder="Describe your services, experience, and what makes you stand out..."
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none resize-none"
+                  className={`${getInputClassName('bio', formData.bio, focusedField)} resize-none`}
                 />
               </div>
 
               <button
                 onClick={() => setStep(3)}
                 disabled={!formData.estateZone || !formData.bio || formData.experienceYears < 0}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Continue
               </button>
@@ -385,13 +411,15 @@ export default function ArtisanOnboardPage() {
                     type="text"
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
+                    onFocus={() => setFocusedField('skillInput')}
+                    onBlur={() => setFocusedField(null)}
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                     placeholder="e.g., Inverter installation, Wiring, etc."
-                    className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none"
+                    className={`flex-1 ${getInputClassName('skillInput', skillInput, focusedField)}`}
                   />
                   <button
                     onClick={addSkill}
-                    className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600"
+                    className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700"
                   >
                     Add
                   </button>
@@ -406,12 +434,12 @@ export default function ArtisanOnboardPage() {
                   {formData.skills.map((skill, index) => (
                     <div
                       key={index}
-                      className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg flex items-center gap-2"
+                      className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg flex items-center gap-2"
                     >
                       <span>{skill}</span>
                       <button
                         onClick={() => removeSkill(skill)}
-                        className="hover:text-orange-900"
+                        className="hover:text-blue-900"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -423,7 +451,7 @@ export default function ArtisanOnboardPage() {
               <button
                 onClick={() => setStep(4)}
                 disabled={formData.skills.length < 2}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 Continue
               </button>
@@ -499,7 +527,7 @@ export default function ArtisanOnboardPage() {
                     </div>
                   ))}
                   {portfolioImages.length < 6 && (
-                    <label className="cursor-pointer w-full h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-orange-500 hover:bg-orange-50 transition-all">
+                    <label className="cursor-pointer w-full h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-all">
                       <input
                         type="file"
                         accept="image/*"
@@ -519,7 +547,7 @@ export default function ArtisanOnboardPage() {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -550,7 +578,7 @@ export default function ArtisanOnboardPage() {
 
               <a
                 href="/"
-                className="inline-block px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold rounded-xl hover:shadow-lg"
+                className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:shadow-lg"
               >
                 Back to Home
               </a>

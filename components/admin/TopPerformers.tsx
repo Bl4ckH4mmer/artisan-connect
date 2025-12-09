@@ -51,7 +51,7 @@ export default function TopPerformers({ artisans, sortBy = 'rating' }: TopPerfor
     return (
         <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg">
                     <Star className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -125,7 +125,7 @@ export default function TopPerformers({ artisans, sortBy = 'rating' }: TopPerfor
             {artisans.length > 0 && (
                 <Link
                     href="/admin/artisans"
-                    className="block mt-4 text-center text-sm text-orange-600 hover:text-orange-700 font-medium"
+                    className="block mt-4 text-center text-sm text-blue-600 hover:text-blue-700 font-medium"
                 >
                     View All Artisans →
                 </Link>

@@ -16,15 +16,15 @@ export default function AdminNav() {
     ]
 
     return (
-        <nav className="bg-white border-b border-gray-200">
+        <nav className="bg-[#1E3A8A] border-b border-blue-900">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center gap-8">
                         <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg">
-                                <LayoutDashboard className="w-5 h-5 text-white" />
+                            <div className="p-1.5 bg-blue-700 rounded-lg">
+                                <LayoutDashboard className="w-5 h-5 text-blue-100" />
                             </div>
-                            <span className="text-lg font-bold text-gray-900">Admin Panel</span>
+                            <span className="text-lg font-bold text-white">Admin Panel</span>
                         </div>
 
                         <div className="flex gap-1">
@@ -37,8 +37,8 @@ export default function AdminNav() {
                                         key={item.href}
                                         href={item.href}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
-                                            ? 'bg-orange-50 text-orange-600'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            ? 'bg-blue-700 text-white'
+                                            : 'text-blue-200 hover:bg-blue-800 hover:text-white'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
@@ -51,7 +51,7 @@ export default function AdminNav() {
 
                     <a
                         href="/"
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-blue-200 hover:text-white"
                     >
                         <LogOut className="w-4 h-4" />
                         <span className="hidden md:inline">Exit Admin</span>

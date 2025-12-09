@@ -56,15 +56,15 @@ export default function AuthModal({ isOpen, onClose, artisanId }: AuthModalProps
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black bg-opacity-50"
+                className="absolute inset-0 bg-black bg-opacity-50 z-10"
                 onClick={handleClose}
             />
 
             {/* Modal */}
-            <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200 z-20">
                 {/* Close Button */}
                 <button
                     onClick={handleClose}
@@ -75,7 +75,7 @@ export default function AuthModal({ isOpen, onClose, artisanId }: AuthModalProps
 
                 {/* Content */}
                 <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-4">
                         <span className="text-3xl">🔒</span>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -113,7 +113,7 @@ export default function AuthModal({ isOpen, onClose, artisanId }: AuthModalProps
 
                     <button
                         onClick={handleSignup}
-                        className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                        className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                     >
                         Create Account
                     </button>

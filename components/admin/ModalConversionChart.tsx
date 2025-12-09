@@ -40,8 +40,8 @@ export default function ModalConversionChart({ data }: ModalConversionChartProps
                         type="monotone"
                         dataKey="shown"
                         stackId="1"
-                        stroke="#f59e0b"
-                        fill="#fbbf24"
+                        stroke="#3b82f6"
+                        fill="#93c5fd"
                         name="Modal Shown"
                     />
                     <Area
@@ -64,8 +64,8 @@ export default function ModalConversionChart({ data }: ModalConversionChartProps
             </ResponsiveContainer>
 
             <div className="mt-4 grid grid-cols-3 gap-4">
-                <div className="text-center p-3 bg-amber-50 rounded-lg">
-                    <div className="text-2xl font-bold text-amber-600">
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
                         {data.reduce((sum, d) => sum + d.shown, 0)}
                     </div>
                     <div className="text-xs text-gray-600">Total Shown</div>

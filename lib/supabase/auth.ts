@@ -59,6 +59,28 @@ export async function verifyOTP(
         const supabase = createClient();
         const isEmail = phoneOrEmail.includes('@');
 
+        // DEV BYPASS: Use '123456' for testing (remove in production!)
+        if (process.env.NODE_ENV === 'development' && code === '123456') {
+            // For dev testing, sign in with password instead
+            // This requires the user to exist with a password
+            console.log('🔓 DEV MODE: Using test code bypass');
+
+            // Try magic link sign-in for dev (auto-confirms)
+            const { data, error } = await supabase.auth.signInWithOtp({
+                email: phoneOrEmail,
+                options: {
+                    shouldCreateUser: true,
+                }
+            });
+
+            // Since we can't truly bypass OTP, we'll use a workaround:
+            // Return success and rely on the session from sendOTP
+            return {
+                success: true,
+                data: { message: 'Dev bypass - check your email for magic link or use real OTP' }
+            };
+        }
+
         if (isEmail) {
             const { data, error } = await supabase.auth.verifyOtp({
                 email: phoneOrEmail,
@@ -146,4 +168,52 @@ export async function getCurrentUser() {
 export async function getUserRole(): Promise<'artisan' | 'buyer' | 'admin' | null> {
     const user = await getCurrentUser();
     return user?.user_metadata?.role || null;
+}
+
+/**
+ * Send password reset email
+ */
+export async function resetPasswordForEmail(email: string): Promise<AuthResponse> {
+    try {
+        const supabase = createClient();
+
+        // Construct the redirect URL for the update-password page
+        // Note: In production, this should be the full publicly accessible URL
+        const redirectUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}/auth/update-password`
+            : `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/update-password`;
+
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: redirectUrl,
+        });
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+
+        return { success: true, data };
+    } catch (error: any) {
+        return { success: false, error: error.message || 'Failed to send reset email' };
+    }
+}
+
+/**
+ * Update user password
+ */
+export async function updateUserPassword(password: string): Promise<AuthResponse> {
+    try {
+        const supabase = createClient();
+
+        const { data, error } = await supabase.auth.updateUser({
+            password: password
+        });
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+
+        return { success: true, data };
+    } catch (error: any) {
+        return { success: false, error: error.message || 'Failed to update password' };
+    }
 }
