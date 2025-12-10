@@ -13,6 +13,16 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
     // Show only first 4 categories on main page
     const displayedCategories = ARTISAN_CATEGORIES.slice(0, 4)
 
+    // Map categories to their specific image files
+    const CATEGORY_IMAGES: Record<string, string> = {
+        'Electrician': '/categories/electrical.png',
+        'Plumber': '/categories/plumbing.png',
+        'Mechanic (Auto)': '/categories/mechanic.png',
+        'Generator Repair': '/categories/generator.png',
+        'Carpenter': '/categories/carpentry.png',
+        'Painter': '/categories/painting.png',
+    }
+
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
@@ -39,10 +49,10 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
                             ? 'shadow-lg ring-2 ring-[#C75B39]'
                             : 'bg-gradient-to-br from-gray-100 to-gray-200'
                             }`}>
-                            {['Carpentry', 'Plumbing', 'Electrical', 'Painting'].includes(category) ? (
+                            {CATEGORY_IMAGES[category] ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={`/categories/${category.toLowerCase()}.png`}
+                                    src={CATEGORY_IMAGES[category]}
                                     alt={category}
                                     className="w-full h-full object-cover"
                                 />
