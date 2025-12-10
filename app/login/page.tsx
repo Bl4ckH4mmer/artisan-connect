@@ -11,7 +11,20 @@ export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
+
     const [error, setError] = useState<string | null>(null)
+    const [focusedField, setFocusedField] = useState<string | null>(null)
+
+    // Helper to get input class based on focus state
+    const getInputClassName = (fieldName: string, value: string) => {
+        const isActive = focusedField === fieldName && value.length > 0
+        const baseClasses = 'w-full px-4 py-3 border rounded-xl focus:outline-none transition-all'
+
+        if (isActive) {
+            return `${baseClasses} bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
+        }
+        return `${baseClasses} border-gray-300 focus:ring-2 focus:ring-[var(--warm-primary)] focus:border-transparent`
+    }
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -99,8 +112,10 @@ export default function LoginPage() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                onFocus={() => setFocusedField('email')}
+                                onBlur={() => setFocusedField(null)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--warm-primary)] focus:border-transparent transition-all"
+                                className={getInputClassName('email', email)}
                                 placeholder="you@example.com"
                             />
                         </div>
@@ -113,8 +128,10 @@ export default function LoginPage() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                onFocus={() => setFocusedField('password')}
+                                onBlur={() => setFocusedField(null)}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--warm-primary)] focus:border-transparent transition-all"
+                                className={getInputClassName('password', password)}
                                 placeholder="••••••••"
                             />
                         </div>
