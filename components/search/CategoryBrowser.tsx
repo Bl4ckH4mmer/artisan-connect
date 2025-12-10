@@ -52,9 +52,15 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
                             {CATEGORY_IMAGES[category] ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={CATEGORY_IMAGES[category]}
+                                    src={`${CATEGORY_IMAGES[category]}?v=2`}
                                     alt={category}
                                     className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        // Fallback to emoji if image fails
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.parentElement!.innerText = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧';
+                                        e.currentTarget.parentElement!.className = 'w-20 h-20 rounded-full flex items-center justify-center transition-all overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 text-4xl';
+                                    }}
                                 />
                             ) : (
                                 <span className="text-4xl">{CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧'}</span>
