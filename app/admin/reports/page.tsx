@@ -14,6 +14,17 @@ export default function ReportsPage() {
     const supabase = createClient()
     const { showToast } = useToast()
 
+    useEffect(() => {
+        checkAdminAccess()
+    }, [])
+
+    const checkAdminAccess = async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user || user.user_metadata?.role !== 'admin') {
+            router.push('/')
+        }
+    }
+
     const [generating, setGenerating] = useState(false)
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
