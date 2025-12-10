@@ -35,11 +35,20 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
                         className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-all hover:bg-[#FAF7F2] ${selectedCategory === category ? 'bg-[#FFF8F0] ring-2 ring-[#C75B39]' : ''
                             }`}
                     >
-                        <div className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all ${selectedCategory === category
-                            ? 'bg-gradient-to-br from-[#C75B39] to-[#D97642] shadow-lg'
+                        <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all overflow-hidden ${selectedCategory === category
+                            ? 'shadow-lg ring-2 ring-[#C75B39]'
                             : 'bg-gradient-to-br from-gray-100 to-gray-200'
                             }`}>
-                            {CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧'}
+                            {['Carpentry', 'Plumbing', 'Electrical', 'Painting'].includes(category) ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={`/categories/${category.toLowerCase()}.png`}
+                                    alt={category}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span className="text-4xl">{CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧'}</span>
+                            )}
                         </div>
                         <span className={`text-sm font-medium text-center ${selectedCategory === category ? 'text-[#8B4513]' : 'text-gray-700'
                             }`}>

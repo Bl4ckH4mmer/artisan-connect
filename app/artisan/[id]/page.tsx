@@ -51,15 +51,17 @@ export default async function ArtisanProfilePage({
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6 z-10">
                             {/* Profile Image */}
-                            <div className="relative" suppressHydrationWarning>
+                            {/* Profile Image */}
+                            <div className="relative w-full h-64">
                                 {artisan.profile_image ? (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
                                     <img
                                         src={artisan.profile_image}
                                         alt={artisan.business_name}
-                                        className="w-full h-64 object-cover"
+                                        className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-6xl">
+                                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-6xl">
                                         {categoryIcon}
                                     </div>
                                 )}

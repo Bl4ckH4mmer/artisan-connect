@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useInputGradient } from '@/lib/hooks/useInputGradient'
+import ImageUpload from '@/components/ui/ImageUpload'
 
 // Helper to get input class based on focus state
 const getInputClassName = (fieldName: string, value: string, focusedField: string | null) => {
@@ -20,6 +21,10 @@ const getInputClassName = (fieldName: string, value: string, focusedField: strin
 export default function SignupPage() {
     const router = useRouter()
     const supabase = createClient()
+    const [isArtisan, setIsArtisan] = useState(false)
+    const [profileImage, setProfileImage] = useState<string | null>(null)
+    const [portfolioImages, setPortfolioImages] = useState<string[]>([])
+
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -52,6 +57,9 @@ export default function SignupPage() {
             options: {
                 data: {
                     full_name: fullName,
+                    is_artisan: isArtisan,
+                    avatar_url: profileImage,
+                    portfolio_urls: isArtisan ? portfolioImages : [],
                 },
                 emailRedirectTo: `${window.location.origin}/auth/callback`
             }
@@ -70,7 +78,12 @@ export default function SignupPage() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`
+                redirectTo: `${window.location.origin}/auth/callback`,
+                queryParams: {
+                    // Note: Google auth doesn't easily support passing custom data like is_artisan in the initial request 
+                    // without additional setup. For now, we'll default to buyer or handle it in specific flow.
+                    // To properly handle this, we'd typically redirect to an onboarding page.
+                }
             }
         })
         if (error) {
@@ -147,6 +160,55 @@ export default function SignupPage() {
                     </div>
 
                     <form onSubmit={handleEmailSignup} className="space-y-4">
+                        {/* Role Toggle */}
+                        <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setIsArtisan(false)}
+                                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${!isArtisan ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                Buyer
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsArtisan(true)}
+                                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${isArtisan ? 'bg-white shadow text-[#C75B39]' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                Artisan
+                            </button>
+                        </div>
+
+                        {/* Image Uploads */}
+                        <div className="mb-6 space-y-4">
+                            <ImageUpload
+                                bucket="avatars"
+                                onUpload={(url) => setProfileImage(url)}
+                                label={isArtisan ? "Profile Photo" : "Profile Photo (Optional)"}
+                                className="w-full"
+                            />
+
+                            {isArtisan && (
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-700">Portfolio Work</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[0, 1].map((i) => (
+                                            <ImageUpload
+                                                key={i}
+                                                bucket="portfolios"
+                                                onUpload={(url) => {
+                                                    const newImages = [...portfolioImages];
+                                                    newImages[i] = url;
+                                                    setPortfolioImages(newImages);
+                                                }}
+                                                className="w-full"
+                                            />
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-gray-500">Upload examples of your work</p>
+                                </div>
+                            )}
+                        </div>
+
                         <div>
                             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
                                 Full Name

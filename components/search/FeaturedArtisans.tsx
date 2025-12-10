@@ -32,7 +32,7 @@ export default function FeaturedArtisans({ artisans }: FeaturedArtisansProps) {
                         <a
                             key={artisan.id}
                             href={`/artisan/${artisan.id}`}
-                            className="flex-shrink-0 w-64 bg-gradient-to-br from-[#FAF7F2] to-white rounded-xl p-4 border border-gray-100 hover:border-[#E89560] hover:shadow-md transition-all"
+                            className="card-hover flex-shrink-0 w-64 bg-gradient-to-br from-[#FAF7F2] to-white rounded-xl p-4 border border-gray-100 hover:border-[#E89560] transition-all"
                         >
                             {/* Artisan Image */}
                             <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-[#C75B39] to-[#D97642]">

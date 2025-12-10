@@ -42,7 +42,8 @@ export default async function DashboardPage() {
                                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-lg text-sm font-medium hover:shadow-md transition-all"
                                 >
                                     <ArrowRightLeft className="w-4 h-4" />
-                                    Switch to Artisan View
+                                    <span className="hidden sm:inline">Switch to Artisan View</span>
+                                    <span className="sm:hidden">Switch View</span>
                                 </Link>
                             )}
                             <form action="/auth/signout" method="post">

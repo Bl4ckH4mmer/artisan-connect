@@ -13,7 +13,7 @@ export default function ArtisanCard({ artisan }: ArtisanCardProps) {
     return (
         <a
             href={`/artisan/${artisan.id}`}
-            className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            className="card-hover group bg-white rounded-xl shadow-sm overflow-hidden"
         >
             {/* Image Section */}
             <div className="relative w-full h-48 bg-gradient-to-br from-[#C75B39] to-[#D97642] overflow-hidden">
