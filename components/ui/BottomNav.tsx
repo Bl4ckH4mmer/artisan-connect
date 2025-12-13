@@ -12,6 +12,10 @@ export function BottomNav() {
     const pathname = usePathname();
     const [profileLink, setProfileLink] = useState('/login');
 
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
+
     useEffect(() => {
         async function getProfileLink() {
             const supabase = createClient();

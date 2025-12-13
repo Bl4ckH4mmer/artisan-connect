@@ -11,6 +11,7 @@ export default function AdminNav() {
         { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
         { href: '/admin/artisans', label: 'Artisans', icon: Users },
+        { href: '/admin/buyers', label: 'Buyers', icon: Users },
         { href: '/admin/activity', label: 'Activity Log', icon: Activity },
         { href: '/admin/reports', label: 'Reports', icon: FileText },
     ]
