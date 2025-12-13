@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search, MapPin, Filter, X } from 'lucide-react'
+import { Search, MapPin, Filter, X, User } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ARTISAN_CATEGORIES, CATEGORY_ICONS } from '@/lib/constants/categories'
 import { ESTATE_ZONES } from '@/lib/constants/locations'
@@ -142,9 +142,31 @@ function SearchPageContent() {
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
                 placeholder="Search artisans or products..."
-                className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${isSearchFocused && searchQuery.length > 0 ? 'bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60' : 'bg-[#FAF7F2] border-transparent focus:border-[#C75B39] focus:bg-white'}`}
+                className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${isSearchFocused && searchQuery.length > 0 ? 'bg-linear-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60' : 'bg-[#FAF7F2] border-transparent focus:border-[#C75B39] focus:bg-white'}`}
               />
             </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="relative px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"
+            >
+              <Filter className="w-5 h-5" />
+              Filters
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#C75B39] text-white text-xs rounded-full flex items-center justify-center">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <a
+              href="/dashboard"
+              className="p-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl transition-all hidden md:flex items-center justify-center"
+              title="Go to Dashboard"
+            >
+              <User className="w-5 h-5" />
+            </a>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="relative px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"

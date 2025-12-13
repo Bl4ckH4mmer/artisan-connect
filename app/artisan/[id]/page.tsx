@@ -36,6 +36,21 @@ export default async function ArtisanProfilePage({
         .limit(10)
 
 
+    // Check if user is logged in
+    const { data: { user } } = await supabase.auth.getUser()
+
+    let hasContacted = false
+    if (user) {
+        const { data: contacts } = await supabase
+            .from('contact_events')
+            .select('id')
+            .eq('buyer_id', user.id)
+            .eq('artisan_id', id)
+            .limit(1)
+
+        hasContacted = contacts && contacts.length > 0 ? true : false
+    }
+
     const categoryIcon = CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'
 
     return (
@@ -183,9 +198,20 @@ export default async function ArtisanProfilePage({
 
                         {/* Reviews Section */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">
-                                Reviews ({artisan.total_reviews})
-                            </h2>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    Reviews ({artisan.total_reviews})
+                                </h2>
+                                {hasContacted && (
+                                    <a
+                                        href={`/artisan/${id}/review`}
+                                        className="px-4 py-2 bg-linear-to-r from-[#C75B39] to-[#D97642] text-white text-sm font-medium rounded-lg hover:shadow-md transition-all flex items-center gap-2"
+                                    >
+                                        <Star className="w-4 h-4 fill-white" />
+                                        Write a Review
+                                    </a>
+                                )}
+                            </div>
                             {reviews && reviews.length > 0 ? (
                                 <div className="space-y-4">
                                     {reviews.map((review: any) => (
