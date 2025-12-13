@@ -57,12 +57,8 @@ export default function ContactButtons({
             ? generateWhatsAppLink(whatsappNumber || phoneNumber, artisanName)
             : generateCallLink(phoneNumber)
 
-        // For tel: links, use location.href for better mobile compatibility
-        if (type === 'call') {
-            window.location.href = link
-        } else {
-            window.open(link, '_blank')
-        }
+        // Use location.href for better mobile compatibility with deep links
+        window.location.href = link
 
         // Reset tracking state
         if (type === 'whatsapp') {
