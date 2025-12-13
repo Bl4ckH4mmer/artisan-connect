@@ -54,7 +54,12 @@ export default function BuyersPage() {
 
         try {
             setDeletingId(id)
-            await deleteUser(id)
+            const result = await deleteUser(id)
+
+            if (!result.success) {
+                alert(result.error || 'Failed to delete user')
+                return
+            }
 
             // Remove from local state
             setBuyers(prev => prev.filter(b => b.user_id !== id))
@@ -147,7 +152,7 @@ export default function BuyersPage() {
                                         <tr key={buyer.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-10 w-10">
+                                                    <div className="shrink-0 h-10 w-10">
                                                         <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
                                                             <span className="text-blue-600 font-medium text-sm">
                                                                 {buyer.full_name?.charAt(0) || '?'}
