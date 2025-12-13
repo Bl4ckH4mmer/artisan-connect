@@ -41,7 +41,7 @@ export default async function ArtisanProfilePage({
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Banner */}
-            <div className="h-64 bg-gradient-to-br from-[#C75B39] via-[#D97642] to-[#B04A2C] flex items-center justify-center text-8xl">
+            <div className="h-64 bg-linear-to-br from-[#C75B39] via-[#D97642] to-[#B04A2C] flex items-center justify-center text-8xl">
                 {categoryIcon}
             </div>
 
@@ -61,7 +61,7 @@ export default async function ArtisanProfilePage({
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-6xl">
+                                    <div className="w-full h-full bg-linear-to-br from-gray-200 to-gray-300 flex items-center justify-center text-6xl">
                                         {categoryIcon}
                                     </div>
                                 )}
@@ -191,7 +191,7 @@ export default async function ArtisanProfilePage({
                                     {reviews.map((review: any) => (
                                         <div key={review.id} className="border-b border-gray-100 pb-4 last:border-b-0">
                                             <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+                                                <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
                                                     ?
                                                 </div>
                                                 <div>

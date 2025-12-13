@@ -61,18 +61,18 @@ export default function ContactButtons({
                 <button
                     onClick={() => handleContact('whatsapp')}
                     disabled={tracking}
-                    className="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all h-[52px]"
+                    className="flex-1 py-3 bg-linear-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all h-[52px]"
                 >
-                    <MessageCircle className="w-5 h-5 flex-shrink-0" />
+                    <MessageCircle className="w-5 h-5 shrink-0" />
                     <span className="whitespace-nowrap">WhatsApp</span>
                 </button>
 
                 <button
                     onClick={() => handleContact('call')}
                     disabled={tracking}
-                    className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all h-[52px]"
+                    className="flex-1 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all h-[52px]"
                 >
-                    <Phone className="w-5 h-5 flex-shrink-0" />
+                    <Phone className="w-5 h-5 shrink-0" />
                     <span className="whitespace-nowrap">Call Now</span>
                 </button>
             </div>

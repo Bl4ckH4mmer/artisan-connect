@@ -16,7 +16,7 @@ export default function ArtisanCard({ artisan }: ArtisanCardProps) {
             className="card-hover group bg-white rounded-xl shadow-sm overflow-hidden"
         >
             {/* Image Section */}
-            <div className="relative w-full h-48 bg-gradient-to-br from-[#C75B39] to-[#D97642] overflow-hidden">
+            <div className="relative w-full h-48 bg-linear-to-br from-[#C75B39] to-[#D97642] overflow-hidden">
                 {artisan.profile_image ? (
                     <Image
                         src={artisan.profile_image}

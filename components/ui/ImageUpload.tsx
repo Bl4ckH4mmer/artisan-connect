@@ -2,11 +2,11 @@
 
 import { useState, useRef } from 'react';
 import { Upload, X, Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { uploadImage } from '@/lib/storage/upload';
 import Image from 'next/image';
 
 interface ImageUploadProps {
-    bucket: string;
+    bucket: 'profiles' | 'portfolios';
     onUpload: (url: string) => void;
     defaultImage?: string;
     label?: string;
@@ -17,7 +17,6 @@ export default function ImageUpload({ bucket, onUpload, defaultImage, label, cla
     const [image, setImage] = useState<string | null>(defaultImage || null);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const supabase = createClient();
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -26,22 +25,16 @@ export default function ImageUpload({ bucket, onUpload, defaultImage, label, cla
         setUploading(true);
 
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            const filePath = `${fileName}`;
+            const { url, error } = await uploadImage(file, bucket);
 
-            const { error: uploadError } = await supabase.storage
-                .from(bucket)
-                .upload(filePath, file);
-
-            if (uploadError) {
-                throw uploadError;
+            if (error) {
+                throw new Error(error);
             }
 
-            const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
-
-            setImage(data.publicUrl);
-            onUpload(data.publicUrl);
+            if (url) {
+                setImage(url);
+                onUpload(url);
+            }
         } catch (error) {
             console.error('Error uploading image:', error);
             alert('Error uploading image');

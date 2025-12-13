@@ -47,7 +47,7 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
                     >
                         <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all overflow-hidden ${selectedCategory === category
                             ? 'shadow-lg ring-2 ring-[#C75B39]'
-                            : 'bg-gradient-to-br from-gray-100 to-gray-200'
+                            : 'bg-linear-to-br from-gray-100 to-gray-200'
                             }`}>
                             {CATEGORY_IMAGES[category] ? (
                                 // eslint-disable-next-line @next/next/no-img-element

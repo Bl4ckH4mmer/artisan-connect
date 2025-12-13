@@ -23,13 +23,13 @@ export default async function DashboardPage() {
     const isArtisan = profile?.is_artisan || false
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0]">
+        <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0]">
             {/* Header */}
             <header className="bg-white border-b border-gray-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <Link href="/" className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-gradient-to-br from-[var(--warm-primary)] to-[var(--warm-secondary)] rounded-xl flex items-center justify-center">
+                            <div className="w-10 h-10 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-xl flex items-center justify-center">
                                 <span className="text-xl">🎨</span>
                             </div>
                             <span className="font-bold text-xl text-gray-900">Artisan Connect</span>
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
                             {isArtisan && (
                                 <Link
                                     href="/artisan/dashboard"
-                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-lg text-sm font-medium hover:shadow-md transition-all"
+                                    className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-lg text-sm font-medium hover:shadow-md transition-all"
                                 >
                                     <ArrowRightLeft className="w-4 h-4" />
                                     <span className="hidden sm:inline">Switch to Artisan View</span>
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
                         href="/search"
                         className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
                     >
-                        <div className="w-12 h-12 bg-gradient-to-br from-[var(--warm-primary)] to-[var(--warm-secondary)] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <span className="text-2xl">🔍</span>
                         </div>
                         <h3 className="font-semibold text-lg text-gray-900 mb-2">Browse Artisans</h3>
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
                         {!isArtisan && (
                             <Link
                                 href="/become-artisan"
-                                className="flex items-center justify-between p-4 bg-gradient-to-r from-[var(--warm-bg-light)] to-orange-50 rounded-xl hover:shadow-md transition-all border border-orange-200"
+                                className="flex items-center justify-between p-4 bg-linear-to-r from-(--warm-bg-light) to-orange-50 rounded-xl hover:shadow-md transition-all border border-orange-200"
                             >
                                 <div className="flex items-center gap-3">
                                     <span className="text-2xl">🎨</span>
@@ -156,7 +156,7 @@ export default async function DashboardPage() {
                                         <p className="text-sm text-gray-500">List your services on Artisan Connect</p>
                                     </div>
                                 </div>
-                                <span className="text-[var(--warm-primary)] font-semibold">Get Started →</span>
+                                <span className="text-(--warm-primary) font-semibold">Get Started →</span>
                             </Link>
                         )}
                     </div>

@@ -32,10 +32,10 @@ export default function FeaturedArtisans({ artisans }: FeaturedArtisansProps) {
                         <a
                             key={artisan.id}
                             href={`/artisan/${artisan.id}`}
-                            className="card-hover flex-shrink-0 w-64 bg-gradient-to-br from-[#FAF7F2] to-white rounded-xl p-4 border border-gray-100 hover:border-[#E89560] transition-all"
+                            className="card-hover shrink-0 w-64 bg-linear-to-br from-[#FAF7F2] to-white rounded-xl p-4 border border-gray-100 hover:border-[#E89560] transition-all"
                         >
                             {/* Artisan Image */}
-                            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-gradient-to-br from-[#C75B39] to-[#D97642]">
+                            <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-linear-to-br from-[#C75B39] to-[#D97642]">
                                 {artisan.profile_image ? (
                                     <Image
                                         src={artisan.profile_image}
@@ -57,7 +57,7 @@ export default function FeaturedArtisans({ artisans }: FeaturedArtisansProps) {
                                         {artisan.artisan_name}
                                     </h3>
                                     {artisan.is_verified && (
-                                        <Shield className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                        <Shield className="w-5 h-5 text-blue-500 shrink-0" />
                                     )}
                                 </div>
 

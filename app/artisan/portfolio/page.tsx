@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Upload, X, Image as ImageIcon, Loader2, Camera } from 'lucide-react'
+import { ArrowLeft, Upload, X, Image as ImageIcon, Loader2, Camera, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { uploadImage } from '@/lib/storage/upload'
 
 export default function PortfolioPage() {
     const router = useRouter()
@@ -19,6 +20,12 @@ export default function PortfolioPage() {
     const [profileImage, setProfileImage] = useState<string>('')
     const [portfolioImages, setPortfolioImages] = useState<string[]>([])
     const [newImageUrl, setNewImageUrl] = useState('')
+
+    // File upload states
+    const [uploadingProfile, setUploadingProfile] = useState(false)
+    const [uploadingPortfolio, setUploadingPortfolio] = useState(false)
+    const profileInputRef = useRef<HTMLInputElement>(null)
+    const portfolioInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         loadPortfolio()
@@ -100,6 +107,97 @@ export default function PortfolioPage() {
         setProfileImage(url)
     }
 
+    // Handle profile image file upload
+    const handleProfileFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError('Please select an image file')
+            return
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image size must be less than 5MB')
+            return
+        }
+
+        setUploadingProfile(true)
+        setError('')
+
+        try {
+            const result = await uploadImage(file, 'profiles')
+            if (result.error) {
+                setError(result.error)
+            } else if (result.url) {
+                setProfileImage(result.url)
+                setSuccess('Profile image uploaded successfully!')
+                setTimeout(() => setSuccess(''), 3000)
+            }
+        } catch (err: any) {
+            setError('Failed to upload image')
+        } finally {
+            setUploadingProfile(false)
+            if (profileInputRef.current) {
+                profileInputRef.current.value = ''
+            }
+        }
+    }
+
+    // Handle portfolio image file upload
+    const handlePortfolioFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files || files.length === 0) return
+
+        setUploadingPortfolio(true)
+        setError('')
+
+        const uploadedUrls: string[] = []
+        const errors: string[] = []
+
+        for (const file of Array.from(files)) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                errors.push(`${file.name}: Not an image file`)
+                continue
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                errors.push(`${file.name}: File size exceeds 5MB`)
+                continue
+            }
+
+            try {
+                const result = await uploadImage(file, 'portfolios')
+                if (result.error) {
+                    errors.push(`${file.name}: ${result.error}`)
+                } else if (result.url) {
+                    uploadedUrls.push(result.url)
+                }
+            } catch (err: any) {
+                errors.push(`${file.name}: Upload failed`)
+            }
+        }
+
+        if (uploadedUrls.length > 0) {
+            setPortfolioImages(prev => [...prev, ...uploadedUrls])
+            setSuccess(`${uploadedUrls.length} image(s) uploaded successfully!`)
+            setTimeout(() => setSuccess(''), 3000)
+        }
+
+        if (errors.length > 0) {
+            setError(errors.join('; '))
+        }
+
+        setUploadingPortfolio(false)
+        if (portfolioInputRef.current) {
+            portfolioInputRef.current.value = ''
+        }
+    }
+
     const handleSave = async () => {
         setError('')
         setSuccess('')
@@ -135,7 +233,7 @@ export default function PortfolioPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[var(--blue-bg-light)] via-white to-[var(--blue-light)] flex items-center justify-center">
+            <div className="min-h-screen bg-linear-to-br from-(--blue-bg-light) via-white to-(--blue-light) flex items-center justify-center">
                 <div className="flex items-center gap-3 text-gray-600">
                     <Loader2 className="w-6 h-6 animate-spin" />
                     Loading portfolio...
@@ -145,7 +243,7 @@ export default function PortfolioPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--blue-bg-light)] via-white to-[var(--blue-light)] py-8 px-4">
+        <div className="min-h-screen bg-linear-to-br from-(--blue-bg-light) via-white to-(--blue-light) py-8 px-4">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -173,14 +271,19 @@ export default function PortfolioPage() {
                 )}
 
                 {/* Profile Image Section */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                <div className="bg-white rounded-2xl shadow-xl p-4 md:p-8 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <Camera className="w-6 h-6 text-[var(--blue-primary)]" />
+                        <Camera className="w-6 h-6 text-(--blue-primary)" />
                         <h2 className="text-xl font-semibold text-gray-900">Profile Image</h2>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-6 items-start">
-                        <div className="w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border-2 border-gray-200">
+                        <div className="relative w-full md:w-48 h-48 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border-2 border-gray-200 group mx-auto md:mx-0">
+                            {uploadingProfile && (
+                                <div className="absolute inset-0 bg-black/50 z-10 flex items-center justify-center">
+                                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                </div>
+                            )}
                             {profileImage ? (
                                 <img
                                     src={profileImage}
@@ -196,59 +299,136 @@ export default function PortfolioPage() {
                                     <p className="text-sm">No profile image</p>
                                 </div>
                             )}
+
+                            {/* Clickable overlay for upload */}
+                            <button
+                                onClick={() => profileInputRef.current?.click()}
+                                disabled={uploadingProfile}
+                                className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center opacity-0 hover:opacity-100"
+                            >
+                                <div className="bg-white/90 rounded-lg px-3 py-2 flex items-center gap-2">
+                                    <Upload className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Upload</span>
+                                </div>
+                            </button>
+                            <input
+                                ref={profileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleProfileFileUpload}
+                                className="hidden"
+                            />
                         </div>
 
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Profile Image URL
-                            </label>
-                            <input
-                                type="url"
-                                value={profileImage}
-                                onChange={(e) => setProfileImage(e.target.value)}
-                                placeholder="https://example.com/image.jpg"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--blue-primary)] focus:border-transparent"
-                            />
-                            <p className="text-sm text-gray-500 mt-2">
-                                Enter a direct URL to your profile image. You can also select from portfolio images below.
-                            </p>
+                        <div className="flex-1 w-full">
+                            <div className="mb-4">
+                                <button
+                                    onClick={() => profileInputRef.current?.click()}
+                                    disabled={uploadingProfile}
+                                    className="w-full px-4 py-3 bg-linear-to-r from-(--blue-primary) to-(--blue-secondary) text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {uploadingProfile ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            Uploading...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload className="w-5 h-5" />
+                                            Upload Profile Image
+                                        </>
+                                    )}
+                                </button>
+                                <p className="text-xs text-gray-500 mt-2 text-center">JPG, PNG or GIF (Max 5MB)</p>
+                            </div>
+
+                            <div className="border-t pt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Or enter image URL
+                                </label>
+                                <input
+                                    type="url"
+                                    value={profileImage}
+                                    onChange={(e) => setProfileImage(e.target.value)}
+                                    placeholder="https://example.com/image.jpg"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-(--blue-primary) focus:border-transparent"
+                                />
+                                <p className="text-sm text-gray-500 mt-2">
+                                    You can also select from portfolio images below.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Portfolio Images Section */}
-                <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                <div className="bg-white rounded-2xl shadow-xl p-4 md:p-8 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <ImageIcon className="w-6 h-6 text-[var(--blue-primary)]" />
+                        <ImageIcon className="w-6 h-6 text-(--blue-primary)" />
                         <h2 className="text-xl font-semibold text-gray-900">Portfolio Images</h2>
                     </div>
 
                     {/* Add Image Form */}
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Add New Image
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Add New Images
                         </label>
-                        <div className="flex gap-3">
-                            <input
-                                type="url"
-                                value={newImageUrl}
-                                onChange={(e) => setNewImageUrl(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddImage())}
-                                placeholder="https://example.com/portfolio-image.jpg"
-                                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[var(--blue-primary)] focus:border-transparent"
-                            />
+
+                        {/* File Upload Button */}
+                        <div className="mb-4">
                             <button
-                                onClick={handleAddImage}
-                                className="px-6 py-3 bg-[var(--blue-primary)] text-white rounded-xl font-semibold hover:bg-[var(--blue-secondary)] transition-all flex items-center gap-2"
+                                onClick={() => portfolioInputRef.current?.click()}
+                                disabled={uploadingPortfolio}
+                                className="w-full px-6 py-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-(--blue-primary) hover:bg-gray-50 transition-all flex items-center justify-center gap-3 group"
                             >
-                                <Upload className="w-5 h-5" />
-                                Add
+                                {uploadingPortfolio ? (
+                                    <>
+                                        <Loader2 className="w-6 h-6 text-(--blue-primary) animate-spin" />
+                                        <span className="text-gray-600 font-medium">Uploading images...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="w-12 h-12 bg-(--blue-primary)/10 rounded-xl flex items-center justify-center group-hover:bg-(--blue-primary)/20 transition-all">
+                                            <Plus className="w-6 h-6 text-(--blue-primary)" />
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-semibold text-gray-900">Click to upload images</p>
+                                            <p className="text-sm text-gray-500">JPG, PNG or GIF (Max 5MB each)</p>
+                                        </div>
+                                    </>
+                                )}
                             </button>
+                            <input
+                                ref={portfolioInputRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handlePortfolioFileUpload}
+                                className="hidden"
+                            />
                         </div>
-                        <p className="text-sm text-gray-500 mt-2">
-                            💡 <strong>Note:</strong> This is a placeholder for image uploads. Enter direct image URLs for now.
-                            In production, you would integrate Supabase Storage or another file upload service.
-                        </p>
+
+                        {/* URL Input (Alternative) */}
+                        <div className="border-t pt-4">
+                            <label className="block text-sm text-gray-600 mb-2">Or add via URL</label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <input
+                                    type="url"
+                                    value={newImageUrl}
+                                    onChange={(e) => setNewImageUrl(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddImage())}
+                                    placeholder="https://example.com/portfolio-image.jpg"
+                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-(--blue-primary) focus:border-transparent"
+                                />
+                                <button
+                                    onClick={handleAddImage}
+                                    className="px-6 py-3 bg-(--blue-primary) text-white rounded-xl font-semibold hover:bg-(--blue-secondary) transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    Add
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Portfolio Grid */}
@@ -295,7 +475,7 @@ export default function PortfolioPage() {
                 </div>
 
                 {/* Save Button */}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <Link
                         href="/artisan/dashboard"
                         className="flex-1 px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition-all text-center"
@@ -305,7 +485,7 @@ export default function PortfolioPage() {
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-[var(--blue-primary)] to-[var(--blue-secondary)] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-linear-to-r from-(--blue-primary) to-(--blue-secondary) hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {saving ? (
                             <>

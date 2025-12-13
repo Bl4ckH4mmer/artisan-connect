@@ -153,23 +153,23 @@ export default function ArtisansPage() {
 
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Page Header */}
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Artisan Management</h1>
                         <p className="text-sm text-gray-600">Manage all artisan profiles</p>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 self-start md:self-auto">
                         <button
                             onClick={handleExport}
                             disabled={exporting}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 text-sm whitespace-nowrap"
                         >
                             <Download className="w-4 h-4" />
                             {exporting ? 'Exporting...' : 'Export CSV'}
                         </button>
                         <button
                             onClick={() => router.push('/admin/artisans/new')}
-                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm whitespace-nowrap"
                         >
                             <UserPlus className="w-4 h-4" />
                             Add Artisan

@@ -94,7 +94,7 @@ export default function SignupPage() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] flex items-center justify-center p-4">
+            <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] flex items-center justify-center p-4">
                 <div className="w-full max-w-md text-center">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
                         <span className="text-4xl">✉️</span>
@@ -106,7 +106,7 @@ export default function SignupPage() {
                     </p>
                     <Link
                         href="/login"
-                        className="inline-block px-6 py-3 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                        className="inline-block px-6 py-3 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                     >
                         Back to Login
                     </Link>
@@ -116,11 +116,11 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[var(--warm-primary)] to-[var(--warm-secondary)] rounded-2xl mb-4 shadow-lg">
+                    <Link href="/" className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-2xl mb-4 shadow-lg">
                         <span className="text-3xl">🎨</span>
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Get Started</h1>
@@ -181,7 +181,7 @@ export default function SignupPage() {
                         {/* Image Uploads */}
                         <div className="mb-6 space-y-4">
                             <ImageUpload
-                                bucket="avatars"
+                                bucket="profiles"
                                 onUpload={(url) => setProfileImage(url)}
                                 label={isArtisan ? "Profile Photo" : "Profile Photo (Optional)"}
                                 className="w-full"
@@ -277,7 +277,7 @@ export default function SignupPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
                         >
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
@@ -285,14 +285,14 @@ export default function SignupPage() {
 
                     <p className="mt-6 text-center text-gray-600 text-sm">
                         By signing up, you agree to our{' '}
-                        <Link href="/terms" className="text-[var(--warm-primary)] hover:underline">Terms of Service</Link>
+                        <Link href="/terms" className="text-(--warm-primary) hover:underline">Terms of Service</Link>
                         {' '}and{' '}
-                        <Link href="/privacy" className="text-[var(--warm-primary)] hover:underline">Privacy Policy</Link>
+                        <Link href="/privacy" className="text-(--warm-primary) hover:underline">Privacy Policy</Link>
                     </p>
 
                     <p className="mt-4 text-center text-gray-600">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-[var(--warm-primary)] font-semibold hover:underline">
+                        <Link href="/login" className="text-(--warm-primary) font-semibold hover:underline">
                             Sign In
                         </Link>
                     </p>
