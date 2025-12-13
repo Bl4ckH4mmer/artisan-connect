@@ -66,7 +66,6 @@ export default async function ArtisanProfilePage({
                     <div className="lg:col-span-1">
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6 z-10">
                             {/* Profile Image */}
-                            {/* Profile Image */}
                             <div className="relative w-full h-64">
                                 {artisan.profile_image ? (
                                     /* eslint-disable-next-line @next/next/no-img-element */
