@@ -50,7 +50,7 @@ export function BottomNav() {
         },
         {
             name: 'Favorites',
-            href: '/favorites',
+            href: '/dashboard/favorites',
             icon: Heart,
         },
         {

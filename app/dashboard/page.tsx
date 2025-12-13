@@ -88,7 +88,7 @@ export default async function DashboardPage() {
 
                     {/* Favorites */}
                     <Link
-                        href="/favorites"
+                        href="/dashboard/favorites"
                         className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
                     >
                         <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

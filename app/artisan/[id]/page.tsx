@@ -1,10 +1,11 @@
-import { Star, MapPin, Phone, Shield, Briefcase } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { CATEGORY_ICONS } from '@/lib/constants/categories'
 import ContactButtons from '@/components/artisan/ContactButtons'
 import PortfolioGallery from '@/components/artisan/PortfolioGallery'
 import PhoneDisplay from '@/components/artisan/PhoneDisplay'
 import { notFound } from 'next/navigation'
+import FavoriteButton from '@/components/shared/FavoriteButton'
+import { Shield, Briefcase, Star, MapPin } from 'lucide-react'
 
 export default async function ArtisanProfilePage({
     params,
@@ -67,6 +68,9 @@ export default async function ArtisanProfilePage({
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6 z-10">
                             {/* Profile Image */}
                             <div className="relative w-full h-64">
+                                <div className="absolute top-4 left-4 z-20">
+                                    <FavoriteButton artisanId={id} size="lg" />
+                                </div>
                                 {artisan.profile_image ? (
                                     /* eslint-disable-next-line @next/next/no-img-element */
                                     <img
