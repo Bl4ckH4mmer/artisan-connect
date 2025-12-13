@@ -141,7 +141,7 @@ export default async function ArtisanProfilePage({
                                                 </p>
                                             </div>
                                         </div>
-                                        <PhoneDisplay phoneNumber={artisan.phone_number} />
+                                        <PhoneDisplay phoneNumber={artisan.phone_number} artisanId={artisan.id} />
                                     </div>
                                 </div>
                             </div>
