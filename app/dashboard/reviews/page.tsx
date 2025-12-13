@@ -45,6 +45,8 @@ export default function BuyerReviewsPage() {
                 .eq('buyer_id', user.id)
                 .order('created_at', { ascending: false })
 
+
+
             if (contactError) throw contactError
 
             if (!contacts || contacts.length === 0) {
@@ -134,14 +136,14 @@ export default function BuyerReviewsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] flex items-center justify-center">
+            <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] flex items-center justify-center">
                 <div className="text-gray-500">Loading your reviews...</div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] py-8 px-4">
+        <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] py-8 px-4">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -172,7 +174,7 @@ export default function BuyerReviewsPage() {
                         </p>
                         <Link
                             href="/search"
-                            className="inline-block px-6 py-3 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                            className="inline-block px-6 py-3 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                         >
                             Browse Artisans
                         </Link>
@@ -203,8 +205,8 @@ export default function BuyerReviewsPage() {
                                                     <Star
                                                         key={star}
                                                         className={`w-4 h-4 ${star <= artisan.rating!
-                                                                ? 'text-yellow-400 fill-yellow-400'
-                                                                : 'text-gray-300'
+                                                            ? 'text-yellow-400 fill-yellow-400'
+                                                            : 'text-gray-300'
                                                             }`}
                                                     />
                                                 ))}
@@ -221,7 +223,7 @@ export default function BuyerReviewsPage() {
                                         {artisan.review_status === 'not_reviewed' ? (
                                             <Link
                                                 href={`/artisan/${artisan.artisan_id}/review`}
-                                                className="px-4 py-2 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-lg font-medium hover:shadow-md transition-all"
+                                                className="px-4 py-2 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-lg font-medium hover:shadow-md transition-all"
                                             >
                                                 Write Review
                                             </Link>

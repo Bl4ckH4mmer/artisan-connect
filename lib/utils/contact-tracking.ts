@@ -43,7 +43,7 @@ export async function trackContactEvent(
         const { error } = await supabase
             .from('contact_events')
             .insert({
-                buyer_user_id: user.id,
+                buyer_id: user.id,
                 artisan_id: artisanId,
                 contact_type: contactType,
             });

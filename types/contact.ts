@@ -1,6 +1,6 @@
 export interface ContactEvent {
     id: string;
-    buyer_user_id: string;
+    buyer_id: string;
     artisan_id: string;
     contact_type: ContactType;
     contacted_at: string;
@@ -12,7 +12,7 @@ export interface ContactEvent {
 export type ContactType = 'whatsapp' | 'call';
 
 export interface ContactEventCreate {
-    buyer_user_id: string;
+    buyer_id: string;
     artisan_id: string;
     contact_type: ContactType;
 }
