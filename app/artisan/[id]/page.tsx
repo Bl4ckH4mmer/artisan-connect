@@ -1,11 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { CATEGORY_ICONS } from '@/lib/constants/categories'
+import { trackProfileView } from '@/lib/analytics'
 import ContactButtons from '@/components/artisan/ContactButtons'
 import PortfolioGallery from '@/components/artisan/PortfolioGallery'
 import PhoneDisplay from '@/components/artisan/PhoneDisplay'
 import { notFound } from 'next/navigation'
 import FavoriteButton from '@/components/shared/FavoriteButton'
 import { Shield, Briefcase, Star, MapPin } from 'lucide-react'
+import { BoostBadge } from '@/components/ui/boost-badge'
 
 export default async function ArtisanProfilePage({
     params,
@@ -18,7 +20,13 @@ export default async function ArtisanProfilePage({
     // Fetch artisan profile
     const { data: artisan, error } = await supabase
         .from('artisan_profiles')
-        .select('*')
+        .select(`
+            *,
+            artisan_subscriptions (
+                tier,
+                expires_at
+            )
+        `)
         .eq('id', id)
         .eq('status', 'active')
         .single()
@@ -51,6 +59,25 @@ export default async function ArtisanProfilePage({
 
         hasContacted = contacts && contacts.length > 0 ? true : false
     }
+
+    // Track Profile View
+    await trackProfileView({
+        artisan_id: id,
+        viewer_id: user?.id,
+        source: 'direct'
+    }, supabase)
+
+    // Normalize subscription tier from the joined data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subscription = (artisan as any).artisan_subscriptions?.[0] || (artisan as any).artisan_subscriptions
+
+    // Check if subscription is active based on expiry
+    const isSubscriptionActive = subscription?.expires_at
+        ? new Date(subscription.expires_at) > new Date()
+        : false
+
+    const currentTier = (isSubscriptionActive ? subscription.tier : 'free') as 'free' | 'boost' | 'pro' | 'guarantee'
+
 
     const categoryIcon = CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'
 
@@ -91,8 +118,13 @@ export default async function ArtisanProfilePage({
                             </div>
 
                             <div className="p-6">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                                <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                                     {artisan.business_name}
+                                    <BoostBadge
+                                        tier={currentTier}
+                                        showLabel={true}
+                                        className="text-[10px] px-2"
+                                    />
                                 </h1>
                                 <p className="text-gray-600 mb-4">{artisan.artisan_name}</p>
 

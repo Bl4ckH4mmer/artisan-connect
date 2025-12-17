@@ -4,7 +4,9 @@ import { Star, MapPin, Shield } from 'lucide-react'
 import { ArtisanProfile } from '@/types/artisan'
 import { CATEGORY_ICONS } from '@/lib/constants/categories'
 import Image from 'next/image'
+import Link from 'next/link'
 import FavoriteButton from '../shared/FavoriteButton'
+import { BoostBadge } from '@/components/ui/boost-badge'
 
 interface ArtisanCardProps {
     artisan: ArtisanProfile
@@ -13,18 +15,27 @@ interface ArtisanCardProps {
 export default function ArtisanCard({ artisan }: ArtisanCardProps) {
     return (
         <div className="relative group/card">
-            <a
+            <Link
                 href={`/artisan/${artisan.id}`}
-                className="block card-hover group bg-white rounded-xl shadow-sm overflow-hidden"
+                className={`block card-hover group bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 ${artisan.subscription_tier === 'boost' || artisan.is_boosted
+                    ? 'ring-2 ring-amber-400/50 shadow-amber-100'
+                    : ''
+                    }`}
             >
                 {/* Image Section */}
                 <div className="relative w-full h-48 bg-linear-to-br from-[#C75B39] to-[#D97642] overflow-hidden">
-                    {/* Favorite Button - Absolute Top Left to avoid clicking the link? 
-                        The 'a' tag wraps everything, so clicking the button might trigger navigation unless I stop propagation.
-                        FavoriteButton handles stopPropagation.
-                    */}
                     <div className="absolute top-3 left-3 z-20">
                         <FavoriteButton artisanId={artisan.id} size="sm" />
+                    </div>
+
+                    {/* Boost Badge (Top Right) */}
+                    <div className="absolute top-3 right-3 z-20">
+                        <BoostBadge
+                            tier={artisan.subscription_tier || 'free'}
+                            isVerified={artisan.is_verified}
+                            location={artisan.is_boosted_in_location ? artisan.city : undefined} // Or estate_zone if more specific logic needed
+                            showLabel={true}
+                        />
                     </div>
 
                     {artisan.profile_image ? (
@@ -39,21 +50,20 @@ export default function ArtisanCard({ artisan }: ArtisanCardProps) {
                             {CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'}
                         </div>
                     )}
-
-                    {/* Verified Badge */}
-                    {artisan.is_verified && (
-                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md z-20">
-                            <Shield className="w-4 h-4 text-blue-500" />
-                        </div>
-                    )}
                 </div>
 
                 {/* Content Section */}
                 <div className="p-5 space-y-3">
                     <div>
-                        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">
-                            {artisan.business_name}
-                        </h3>
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <h3 className="font-bold text-lg text-gray-900 line-clamp-1">
+                                {artisan.business_name}
+                            </h3>
+                            {/* Verified Badge Inline */}
+                            {artisan.is_verified && (
+                                <Shield className="w-4 h-4 text-blue-500 fill-blue-500/10" />
+                            )}
+                        </div>
                         <p className="text-sm text-gray-600">{artisan.category}</p>
                     </div>
 
@@ -74,11 +84,11 @@ export default function ArtisanCard({ artisan }: ArtisanCardProps) {
                         </div>
                     )}
 
-                    <button className="w-full py-2.5 bg-[#C75B39] text-white text-center rounded-lg hover:bg-[#D97642] font-medium transition-colors mt-2">
+                    <div className="w-full py-2.5 bg-[#C75B39] text-white text-center rounded-lg hover:bg-[#D97642] font-medium transition-colors mt-2">
                         View Profile
-                    </button>
+                    </div>
                 </div>
-            </a>
+            </Link>
         </div>
     )
 }

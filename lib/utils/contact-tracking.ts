@@ -30,7 +30,9 @@ export function generateCallLink(phoneNumber: string): string {
 export async function trackContactEvent(
     artisanId: string,
     contactType: ContactType,
-    supabase: any
+    supabase: any,
+    artisanCategory?: string,
+    artisanLocation?: string
 ): Promise<void> {
     try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -46,6 +48,8 @@ export async function trackContactEvent(
                 buyer_id: user.id,
                 artisan_id: artisanId,
                 contact_type: contactType,
+                artisan_category: artisanCategory,
+                artisan_location: artisanLocation,
             });
 
         if (error) {

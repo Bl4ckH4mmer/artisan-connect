@@ -51,24 +51,35 @@ export default function SignupPage() {
             return
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 data: {
                     full_name: fullName,
-                    is_artisan: isArtisan,
-                    avatar_url: profileImage,
-                    portfolio_urls: isArtisan ? portfolioImages : [],
+                    // If artisan, we don't set flag yet - they must complete onboarding
+                    is_artisan: isArtisan ? false : false,
+                    avatar_url: isArtisan ? null : profileImage,
+                    // If artisan, we skip portfolio here
+                    portfolio_urls: [],
                 },
-                emailRedirectTo: `${window.location.origin}/auth/callback`
+                emailRedirectTo: `${window.location.origin}/auth/callback${isArtisan ? '?redirect=/become-artisan' : ''}`
             }
         })
 
         if (error) {
-            setError(error.message)
+            if (error.message.includes('Database error saving new user') || error.status === 500) {
+                setError('This email may already be in use. Please try signing in.')
+            } else {
+                setError(error.message)
+            }
             setLoading(false)
         } else {
+            // If we have a session (auto-confirmed or disabled email confirm), redirect immediately for artisans
+            if (isArtisan && data.session) {
+                router.push('/become-artisan')
+                return
+            }
             setSuccess(true)
         }
     }
@@ -178,36 +189,17 @@ export default function SignupPage() {
                             </button>
                         </div>
 
-                        {/* Image Uploads */}
-                        <div className="mb-6 space-y-4">
-                            <ImageUpload
-                                bucket="profiles"
-                                onUpload={(url) => setProfileImage(url)}
-                                label={isArtisan ? "Profile Photo" : "Profile Photo (Optional)"}
-                                className="w-full"
-                            />
-
-                            {isArtisan && (
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-gray-700">Portfolio Work</label>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {[0, 1].map((i) => (
-                                            <ImageUpload
-                                                key={i}
-                                                bucket="portfolios"
-                                                onUpload={(url) => {
-                                                    const newImages = [...portfolioImages];
-                                                    newImages[i] = url;
-                                                    setPortfolioImages(newImages);
-                                                }}
-                                                className="w-full"
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className="text-xs text-gray-500">Upload examples of your work</p>
-                                </div>
-                            )}
-                        </div>
+                        {/* Image Uploads - Only for Buyers (Artisans do this in onboarding) */}
+                        {!isArtisan && (
+                            <div className="mb-6 space-y-4">
+                                <ImageUpload
+                                    bucket="profiles"
+                                    onUpload={(url) => setProfileImage(url)}
+                                    label="Profile Photo (Optional)"
+                                    className="w-full"
+                                />
+                            </div>
+                        )}
 
                         <div>
                             <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">

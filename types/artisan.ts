@@ -37,6 +37,11 @@ export interface ArtisanProfile {
     // Timestamps
     created_at: string;
     updated_at: string;
+
+    // Computed / Joined Fields (Search API)
+    subscription_tier?: 'free' | 'boost' | 'pro' | 'guarantee';
+    is_boosted?: boolean;
+    is_boosted_in_location?: boolean;
 }
 
 export type ArtisanCategory =

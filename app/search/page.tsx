@@ -11,6 +11,7 @@ import HeroBanner from '@/components/search/HeroBanner'
 import FeaturedArtisans from '@/components/search/FeaturedArtisans'
 import CategoryBrowser from '@/components/search/CategoryBrowser'
 import ArtisanCard from '@/components/search/ArtisanCard'
+import { SearchResultsHeader } from '@/components/search/search-results-header'
 
 type SortOption = 'rating' | 'reviews' | 'contacts' | 'verified';
 
@@ -33,42 +34,45 @@ function SearchPageContent() {
   const supabase = createClient()
 
   const fetchArtisans = async () => {
+    setLoading(true)
     try {
-      const { data, error } = await supabase
-        .from('artisan_profiles')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
+      const params = new URLSearchParams()
+      if (selectedCategory) params.append('category', selectedCategory)
+      if (selectedZone) params.append('location', selectedZone) // API uses 'location' for zone
+      if (sortBy) params.append('sortBy', sortBy)
 
-      if (error) {
-        console.error('Error fetching artisans:', error)
-      } else {
-        const artisanData = (data as ArtisanProfile[]) || []
-        setArtisans(artisanData)
-        setFilteredArtisans(artisanData)
+      const response = await fetch(`/api/artisans/search?${params.toString()}`)
+      const data = await response.json()
 
-        // Get top-rated artisans for featured section (rating >= 4.0 or top 8)
+      if (data.error) throw new Error(data.error)
+
+      const artisanData = data.artisans || []
+      setArtisans(artisanData)
+
+      // Update featured only on initial load (no filters)
+      if (!selectedCategory && !selectedZone && featuredArtisans.length === 0) {
         const featured = artisanData
-          .filter(a => a.rating >= 4.0)
-          .sort((a, b) => b.rating - a.rating)
+          .filter((a: ArtisanProfile) => a.rating >= 4.0)
+          .sort((a: ArtisanProfile, b: ArtisanProfile) => b.rating - a.rating)
           .slice(0, 8)
         setFeaturedArtisans(featured)
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error fetching artisans:', error)
+      // Fallback/Toast could go here
     } finally {
       setLoading(false)
     }
   }
 
+  // Effect to fetch from API when server-side filters change
   useEffect(() => {
     fetchArtisans()
-  }, [])
+  }, [selectedCategory, selectedZone, sortBy])
 
+  // Effect to apply client-side text search
   useEffect(() => {
     let filtered = [...artisans]
-
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(artisan =>
         artisan.business_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -77,35 +81,9 @@ function SearchPageContent() {
         artisan.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     }
-
-    // Apply category filter
-    if (selectedCategory) {
-      filtered = filtered.filter(artisan => artisan.category === selectedCategory)
-    }
-
-    // Apply zone filter
-    if (selectedZone) {
-      filtered = filtered.filter(artisan => artisan.estate_zone === selectedZone)
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'rating':
-          return b.rating - a.rating
-        case 'reviews':
-          return b.total_reviews - a.total_reviews
-        case 'contacts':
-          return b.total_contacts - a.total_contacts
-        case 'verified':
-          return (b.is_verified ? 1 : 0) - (a.is_verified ? 1 : 0)
-        default:
-          return 0
-      }
-    })
-
+    // Note: sorting is now handled by API, so we don't re-sort here to preserve boost rank
     setFilteredArtisans(filtered)
-  }, [searchQuery, selectedCategory, selectedZone, sortBy, artisans])
+  }, [searchQuery, artisans])
 
   const clearFilters = () => {
     setSearchQuery('')
@@ -270,43 +248,39 @@ function SearchPageContent() {
           />
         )}
 
-        {/* Active Filters Summary */}
+        {/* Active Filters & Results Header */}
         {(searchQuery || activeFiltersCount > 0) && (
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  {filteredArtisans.length} artisan{filteredArtisans.length !== 1 ? 's' : ''} found
-                </h2>
-                {(selectedCategory || selectedZone) && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    {selectedCategory && `in ${selectedCategory}`}
-                    {selectedCategory && selectedZone && ' • '}
-                    {selectedZone && selectedZone}
-                  </p>
-                )}
-              </div>
+          <div className="space-y-4">
+            <SearchResultsHeader
+              totalResults={filteredArtisans.length}
+              boostedCount={filteredArtisans.filter(a => a.is_boosted).length}
+              location={selectedZone}
+            />
 
-              {/* Active Filter Chips */}
-              <div className="flex flex-wrap gap-2">
-                {selectedCategory && (
-                  <span className="px-3 py-1.5 bg-[#FFF8F0] text-[#8B4513] rounded-full text-sm font-medium flex items-center gap-2">
-                    {CATEGORY_ICONS[selectedCategory as keyof typeof CATEGORY_ICONS]} {selectedCategory}
-                    <button onClick={() => setSelectedCategory('')} className="hover:bg-[#FAE1D5] rounded-full p-0.5">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </span>
-                )}
-                {selectedZone && (
-                  <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5" /> {selectedZone}
-                    <button onClick={() => setSelectedZone('')} className="hover:bg-blue-200 rounded-full p-0.5">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </span>
-                )}
+            {/* Active Filter Chips */}
+            {activeFiltersCount > 0 && (
+              <div className="bg-white rounded-xl p-4 shadow-sm flex items-center justify-between flex-wrap gap-3">
+                <span className="text-sm text-gray-500 font-medium">Active Filters:</span>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCategory && (
+                    <span className="px-3 py-1.5 bg-[#FFF8F0] text-[#8B4513] rounded-full text-sm font-medium flex items-center gap-2">
+                      {CATEGORY_ICONS[selectedCategory as keyof typeof CATEGORY_ICONS]} {selectedCategory}
+                      <button onClick={() => setSelectedCategory('')} className="hover:bg-[#FAE1D5] rounded-full p-0.5">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  )}
+                  {selectedZone && (
+                    <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5" /> {selectedZone}
+                      <button onClick={() => setSelectedZone('')} className="hover:bg-blue-200 rounded-full p-0.5">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
