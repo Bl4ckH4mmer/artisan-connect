@@ -41,7 +41,8 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
         is_verified: false,
         verification_method: 'in_person' as 'nin' | 'phone_call' | 'in_person',
         admin_notes: '',
-        status: 'active' as 'pending' | 'active' | 'suspended'
+        status: 'active' as 'pending' | 'active' | 'suspended',
+        subscription_tier: 'free' as 'free' | 'boost' | 'pro'
     })
 
     const categories: ArtisanCategory[] = [
@@ -61,7 +62,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
         try {
             const { data, error } = await supabase
                 .from('artisan_profiles')
-                .select('*')
+                .select('*, artisan_subscriptions(tier)')
                 .eq('id', artisanId)
                 .single()
 
@@ -83,7 +84,8 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                 is_verified: data.is_verified || false,
                 verification_method: data.verification_method || 'in_person',
                 admin_notes: data.admin_notes || '',
-                status: data.status || 'active'
+                status: data.status || 'active',
+                subscription_tier: data.artisan_subscriptions?.[0]?.tier || 'free'
             })
 
             setImagePreview(data.profile_image || '')
@@ -148,6 +150,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('Not authenticated')
 
+            // Update profile
             const { error } = await supabase
                 .from('artisan_profiles')
                 .update({
@@ -176,6 +179,25 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
 
             if (error) throw error
 
+            // Update subscription tier
+            // We use upsert on artisan_subscriptions.
+            // Note: In a real production app, changing subscriptions usually involves billing logic.
+            // This admin override bypasses billing.
+            const now = new Date().toISOString()
+            const { error: subError } = await supabase
+                .from('artisan_subscriptions')
+                .upsert({
+                    artisan_id: artisanId,
+                    tier: formData.subscription_tier,
+                    status: 'active',
+                    updated_at: now,
+                    // Required fields for upsert if row doesn't exist, though it should:
+                    started_at: now,
+                    auto_renew: false
+                }, { onConflict: 'artisan_id' })
+
+            if (subError) throw subError
+
             // Log the action
             await logAdminAction({
                 action: 'edit_artisan',
@@ -183,7 +205,8 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                 targetId: artisanId,
                 details: {
                     artisan_name: formData.business_name,
-                    changes: 'Profile updated'
+                    changes: 'Profile updated',
+                    new_tier: formData.subscription_tier
                 }
             })
 
@@ -478,6 +501,21 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                                         </select>
                                     </div>
                                 )}
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Subscription Tier (Admin Override)
+                                    </label>
+                                    <select
+                                        value={formData.subscription_tier}
+                                        onChange={(e) => setFormData({ ...formData, subscription_tier: e.target.value as any })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    >
+                                        <option value="free">Free</option>
+                                        <option value="boost">Boost</option>
+                                        <option value="pro">Pro</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 

@@ -44,7 +44,7 @@ export default function ArtisansPage() {
             setLoading(true)
             let query = supabase
                 .from('artisan_profiles')
-                .select('*')
+                .select('*, artisan_subscriptions(tier)')
                 .order('created_at', { ascending: false })
 
             // Apply filters
@@ -63,7 +63,14 @@ export default function ArtisansPage() {
             const { data, error } = await query
 
             if (error) throw error
-            setArtisans((data as ArtisanProfile[]) || [])
+
+            // Map the subscription tier from the joined table to the profile object
+            const transformedData = (data || []).map((artisan: any) => ({
+                ...artisan,
+                subscription_tier: artisan.artisan_subscriptions?.[0]?.tier || 'free'
+            }))
+
+            setArtisans((transformedData as ArtisanProfile[]))
         } catch (error) {
             console.error('Error fetching artisans:', error)
         } finally {
@@ -267,6 +274,9 @@ export default function ArtisansPage() {
                                             Category
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Plan
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Location
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -295,6 +305,14 @@ export default function ArtisansPage() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className="text-sm text-gray-900">{artisan.category}</span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${artisan.subscription_tier === 'boost' ? 'bg-purple-100 text-purple-800' :
+                                                        artisan.subscription_tier === 'pro' ? 'bg-orange-100 text-orange-800' :
+                                                            'bg-gray-100 text-gray-800'
+                                                    }`}>
+                                                    {artisan.subscription_tier || 'free'}
+                                                </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-900">{artisan.estate_zone}</div>
