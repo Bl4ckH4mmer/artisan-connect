@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         }
 
         // Check cooldown (don't spam if already shown)
-        const canShow = await canShowUpsell(artisanId, 'boost_after_contact');
+        const canShow = await canShowUpsell(artisanId, 'boost_after_contact', supabase);
 
         return NextResponse.json({
             isFirstContact: count === 1,
