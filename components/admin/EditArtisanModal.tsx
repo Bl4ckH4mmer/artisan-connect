@@ -189,9 +189,8 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                 .upsert({
                     artisan_id: artisanId,
                     tier: formData.subscription_tier,
-                    status: 'active',
                     updated_at: now,
-                    // Required fields for upsert if row doesn't exist, though it should:
+                    // Required fields for upsert if row doesn't exist:
                     started_at: now,
                     auto_renew: false
                 }, { onConflict: 'artisan_id' })
