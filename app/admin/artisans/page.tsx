@@ -67,10 +67,16 @@ export default function ArtisansPage() {
             console.log('Fetched Artisans Raw:', data) // Debug log
 
             // Map the subscription tier from the joined table to the profile object
-            const transformedData = (data || []).map((artisan: any) => ({
-                ...artisan,
-                subscription_tier: artisan.artisan_subscriptions?.[0]?.tier || 'free'
-            }))
+            const transformedData = (data || []).map((artisan: any) => {
+                const sub = artisan.artisan_subscriptions
+                // Handle both array (one-to-many) and object (one-to-one) responses
+                const tier = Array.isArray(sub) ? sub[0]?.tier : sub?.tier
+
+                return {
+                    ...artisan,
+                    subscription_tier: tier || 'free'
+                }
+            })
 
             setArtisans((transformedData as ArtisanProfile[]))
         } catch (error) {

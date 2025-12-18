@@ -68,6 +68,10 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
 
             if (error) throw error
 
+            // Handle potential array or object response for subscription
+            const sub = data.artisan_subscriptions
+            const tier = Array.isArray(sub) ? sub[0]?.tier : sub?.tier
+
             setFormData({
                 business_name: data.business_name || '',
                 artisan_name: data.artisan_name || '',
@@ -85,7 +89,7 @@ export default function EditArtisanModal({ artisanId, isOpen, onClose, onSuccess
                 verification_method: data.verification_method || 'in_person',
                 admin_notes: data.admin_notes || '',
                 status: data.status || 'active',
-                subscription_tier: data.artisan_subscriptions?.[0]?.tier || 'free'
+                subscription_tier: tier || 'free'
             })
 
             setImagePreview(data.profile_image || '')
