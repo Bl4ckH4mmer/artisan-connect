@@ -64,6 +64,8 @@ export default function ArtisansPage() {
 
             if (error) throw error
 
+            console.log('Fetched Artisans Raw:', data) // Debug log
+
             // Map the subscription tier from the joined table to the profile object
             const transformedData = (data || []).map((artisan: any) => ({
                 ...artisan,
@@ -308,8 +310,8 @@ export default function ArtisansPage() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${artisan.subscription_tier === 'boost' ? 'bg-purple-100 text-purple-800' :
-                                                        artisan.subscription_tier === 'pro' ? 'bg-orange-100 text-orange-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    artisan.subscription_tier === 'pro' ? 'bg-orange-100 text-orange-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {artisan.subscription_tier || 'free'}
                                                 </span>
