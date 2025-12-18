@@ -36,9 +36,9 @@ export default async function ArtisanDashboardPage() {
     const businessName = artisanProfile?.business_name || 'Your Business'
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--blue-bg-light)] via-white to-[var(--blue-light)]">
+        <div className="min-h-screen bg-linear-to-br from-(--blue-bg-light) via-white to-(--blue-light)">
             {/* Header */}
-            <header className="bg-[var(--blue-primary)] text-white shadow-lg">
+            <header className="bg-(--blue-primary) text-white shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <Link href="/" className="flex items-center gap-2">
@@ -130,14 +130,14 @@ export default async function ArtisanDashboardPage() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <Link
                         href="/artisan/edit-profile"
                         className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
                     >
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[var(--blue-light)] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Edit className="w-6 h-6 text-[var(--blue-primary)]" />
+                            <div className="w-12 h-12 bg-(--blue-light) rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Edit className="w-6 h-6 text-(--blue-primary)" />
                             </div>
                             <div>
                                 <h3 className="font-semibold text-lg text-gray-900">Edit Profile</h3>
@@ -157,6 +157,21 @@ export default async function ArtisanDashboardPage() {
                             <div>
                                 <h3 className="font-semibold text-lg text-gray-900">Manage Portfolio</h3>
                                 <p className="text-gray-500 text-sm">Add photos of your work</p>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <Link
+                        href="/artisan/dashboard/subscription"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Star className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-900">Get Boosted</h3>
+                                <p className="text-gray-500 text-sm">Upgrade plan for more visibility</p>
                             </div>
                         </div>
                     </Link>
