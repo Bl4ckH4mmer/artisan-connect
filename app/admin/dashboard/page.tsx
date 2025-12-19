@@ -316,12 +316,12 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 overflow-x-hidden">
             <AdminNav />
 
-            <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
                     <AnalyticsWidget
                         title="Total Artisans"
                         value={stats.totalArtisans}
@@ -352,17 +352,17 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Modal Conversion Rate Widget */}
-                <div className="mb-8">
-                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                <div className="mb-6 sm:mb-8">
+                    <div className="bg-linear-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 sm:p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-indigo-100 text-sm mb-1">Auth Modal Conversion Rate</p>
-                                <p className="text-4xl font-bold">{modalStats.conversionRate}%</p>
-                                <p className="text-indigo-100 text-sm mt-2">
+                                <p className="text-indigo-100 text-xs sm:text-sm mb-1">Auth Modal Conversion Rate</p>
+                                <p className="text-2xl sm:text-4xl font-bold">{modalStats.conversionRate}%</p>
+                                <p className="text-indigo-100 text-xs sm:text-sm mt-2">
                                     {modalStats.totalConverted} of {modalStats.totalShown} shown
                                 </p>
                             </div>
-                            <div className="text-6xl opacity-20">📊</div>
+                            <div className="text-4xl sm:text-6xl opacity-20">📊</div>
                         </div>
                     </div>
                 </div>

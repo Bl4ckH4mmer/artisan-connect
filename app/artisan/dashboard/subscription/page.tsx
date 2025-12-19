@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Check, Zap, Crown, Shield } from 'lucide-react'
+import { Check, Zap, Crown, Shield, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -78,6 +78,16 @@ export default function SubscriptionPage() {
     return (
         <div className="min-h-screen bg-linear-to-br from-(--blue-bg-light) via-white to-(--blue-light) py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
+                <div className="mb-6">
+                    <button
+                        onClick={() => router.back()}
+                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Dashboard
+                    </button>
+                </div>
+
                 <div className="text-center mb-12">
                     <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4">
                         Upgrade Your Business

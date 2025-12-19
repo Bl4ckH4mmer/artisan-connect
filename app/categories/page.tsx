@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Search, ChevronLeft } from 'lucide-react'
 import { useInputGradient } from '@/lib/hooks/useInputGradient'
-import { ARTISAN_CATEGORIES, CATEGORY_ICONS } from '@/lib/constants/categories'
+import { ARTISAN_CATEGORIES, CATEGORY_ICONS, CATEGORY_IMAGES } from '@/lib/constants/categories'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -71,8 +71,21 @@ export default function CategoriesPage() {
                                 className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
                             >
                                 {/* Category Image/Icon */}
-                                <div className="relative w-full h-48 bg-gradient-to-br from-[#FFF8F0] to-[#FAE1D5] flex items-center justify-center text-6xl group-hover:scale-105 transition-transform">
-                                    {CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧'}
+                                <div className="relative w-full h-48 bg-linear-to-br from-[#FFF8F0] to-[#FAE1D5] flex items-center justify-center text-6xl group-hover:scale-105 transition-transform">
+                                    {CATEGORY_IMAGES[category as keyof typeof CATEGORY_IMAGES] ? (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={`${CATEGORY_IMAGES[category as keyof typeof CATEGORY_IMAGES]}?v=3`}
+                                            alt={category}
+                                            className="w-1/2 h-1/2 object-contain"
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                e.currentTarget.parentElement!.innerText = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧';
+                                            }}
+                                        />
+                                    ) : (
+                                        CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧'
+                                    )}
                                 </div>
 
                                 {/* Category Name */}

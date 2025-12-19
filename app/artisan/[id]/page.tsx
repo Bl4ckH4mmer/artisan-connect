@@ -82,19 +82,19 @@ export default async function ArtisanProfilePage({
     const categoryIcon = CATEGORY_ICONS[artisan.category as keyof typeof CATEGORY_ICONS] || '🔧'
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 overflow-x-hidden">
             {/* Hero Banner */}
-            <div className="h-64 bg-linear-to-br from-[#C75B39] via-[#D97642] to-[#B04A2C] flex items-center justify-center text-8xl">
+            <div className="h-32 sm:h-48 md:h-64 bg-linear-to-br from-[#C75B39] via-[#D97642] to-[#B04A2C] flex items-center justify-center text-5xl sm:text-6xl md:text-8xl">
                 {categoryIcon}
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 -mt-16 pb-12">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 -mt-8 sm:-mt-12 md:-mt-16 pb-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Column - Profile Card */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden sticky top-6 z-10">
+                        <div className="bg-white rounded-2xl shadow-lg overflow-hidden lg:sticky lg:top-6 z-10">
                             {/* Profile Image */}
-                            <div className="relative w-full h-64">
+                            <div className="relative w-full h-48 sm:h-56 md:h-64">
                                 <div className="absolute top-4 left-4 z-20">
                                     <FavoriteButton artisanId={id} size="lg" />
                                 </div>
@@ -117,8 +117,8 @@ export default async function ArtisanProfilePage({
                                 )}
                             </div>
 
-                            <div className="p-6">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <div className="p-4 sm:p-6">
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2 flex-wrap">
                                     {artisan.business_name}
                                     <BoostBadge
                                         tier={currentTier}
@@ -145,8 +145,8 @@ export default async function ArtisanProfilePage({
                                 </div>
 
                                 {/* Stats */}
-                                <div className="grid grid-cols-3 gap-3 mb-6">
-                                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                                    <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
                                             <Star className="w-4 h-4 fill-amber-500" />
                                             <span className="text-lg font-bold text-gray-900">
@@ -155,13 +155,13 @@ export default async function ArtisanProfilePage({
                                         </div>
                                         <p className="text-xs text-gray-600">{artisan.total_reviews} reviews</p>
                                     </div>
-                                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                                         <div className="text-lg font-bold text-gray-900 mb-1">
                                             {artisan.total_contacts}
                                         </div>
                                         <p className="text-xs text-gray-600">Contacts</p>
                                     </div>
-                                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                                    <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                                         <div className="flex items-center justify-center mb-1">
                                             <MapPin className="w-4 h-4 text-gray-600" />
                                         </div>
@@ -199,22 +199,22 @@ export default async function ArtisanProfilePage({
                     </div>
 
                     {/* Right Column - Content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                         {/* About Section */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-3">About</h2>
+                        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">About</h2>
                             <p className="text-gray-700 leading-relaxed">{artisan.bio}</p>
                         </div>
 
                         {/* Skills Section */}
                         {artisan.skills && artisan.skills.length > 0 && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-3">Skills & Specialties</h2>
-                                <div className="flex flex-wrap gap-2">
+                            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Skills & Specialties</h2>
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                     {artisan.skills.map((skill: string, index: number) => (
                                         <span
                                             key={index}
-                                            className="px-4 py-2 bg-[#FFF8F0] text-[#8B4513] rounded-lg font-medium"
+                                            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#FFF8F0] text-[#8B4513] rounded-lg font-medium text-sm sm:text-base"
                                         >
                                             {skill}
                                         </span>
@@ -225,16 +225,16 @@ export default async function ArtisanProfilePage({
 
                         {/* Portfolio Section */}
                         {artisan.portfolio_images && artisan.portfolio_images.length > 0 && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Portfolio</h2>
+                            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Portfolio</h2>
                                 <PortfolioGallery images={artisan.portfolio_images} />
                             </div>
                         )}
 
                         {/* Reviews Section */}
-                        <div className="bg-white rounded-2xl shadow-lg p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-bold text-gray-900">
+                        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                                     Reviews ({artisan.total_reviews})
                                 </h2>
                                 {hasContacted && (

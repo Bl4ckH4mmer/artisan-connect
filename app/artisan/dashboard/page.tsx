@@ -75,7 +75,7 @@ export default async function ArtisanDashboardPage() {
                 {/* Welcome Section */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
                             {businessName}
                         </h1>
                         <p className="text-gray-600">
@@ -98,7 +98,7 @@ export default async function ArtisanDashboardPage() {
                                 <Eye className="w-6 h-6 text-blue-600" />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-900">0</p>
+                                <p className="text-2xl font-bold text-gray-900">{artisanProfile?.total_views || 0}</p>
                                 <p className="text-gray-500 text-sm">Profile Views</p>
                             </div>
                         </div>
@@ -133,7 +133,7 @@ export default async function ArtisanDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <Link
                         href="/artisan/edit-profile"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-(--blue-light) rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -148,7 +148,7 @@ export default async function ArtisanDashboardPage() {
 
                     <Link
                         href="/artisan/portfolio"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -163,7 +163,7 @@ export default async function ArtisanDashboardPage() {
 
                     <Link
                         href="/artisan/dashboard/subscription"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">

@@ -34,6 +34,23 @@ export const CATEGORY_ICONS: Record<ArtisanCategory, string> = {
     'Tailor': '🧵',
 };
 
+export const CATEGORY_IMAGES: Record<ArtisanCategory, string | null> = {
+    'Electrician': '/icons/categories/electrician.png',
+    'Plumber': '/icons/categories/plumber.png',
+    'Mechanic (Auto)': '/icons/categories/mechanic.png',
+    'Generator Repair': null,
+    'AC Technician': null,
+    'Carpenter': null,
+    'Painter': null,
+    'Tiler': null,
+    'Bricklayer': null,
+    'Welder': null,
+    'Roofer': null,
+    'Cleaner': null,
+    'Hairstylist': null,
+    'Tailor': null,
+};
+
 export const CATEGORY_DESCRIPTIONS: Record<ArtisanCategory, string> = {
     'Electrician': 'Wiring, installations, repairs',
     'Plumber': 'Pipes, fixtures, drainage',

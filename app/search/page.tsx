@@ -30,6 +30,7 @@ function SearchPageContent() {
   const [filteredArtisans, setFilteredArtisans] = useState<ArtisanProfile[]>([])
   const [featuredArtisans, setFeaturedArtisans] = useState<ArtisanProfile[]>([])
   const [loading, setLoading] = useState(true)
+  const [visibleCount, setVisibleCount] = useState(9)
 
   const supabase = createClient()
 
@@ -90,6 +91,7 @@ function SearchPageContent() {
     setSelectedCategory('')
     setSelectedZone('')
     setSortBy('rating')
+    setVisibleCount(9)
   }
 
   const activeFiltersCount = [selectedCategory, selectedZone].filter(Boolean).length
@@ -298,10 +300,23 @@ function SearchPageContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArtisans.map((artisan) => (
-              <ArtisanCard key={artisan.id} artisan={artisan} />
-            ))}
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredArtisans.slice(0, visibleCount).map((artisan) => (
+                <ArtisanCard key={artisan.id} artisan={artisan} />
+              ))}
+            </div>
+
+            {filteredArtisans.length > visibleCount && (
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={() => setVisibleCount(prev => prev + 9)}
+                  className="px-8 py-3 bg-white border-2 border-[#C75B39] text-[#C75B39] hover:bg-[#C75B39] hover:text-white rounded-xl font-bold transition-all shadow-sm hover:shadow-md"
+                >
+                  Load More Artisans
+                </button>
+              </div>
+            )}
           </div>
         )}
 

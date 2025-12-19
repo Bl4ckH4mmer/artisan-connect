@@ -21,9 +21,9 @@ export default function LoginPage() {
         const baseClasses = 'w-full px-4 py-3 border rounded-xl focus:outline-none transition-all'
 
         if (isActive) {
-            return `${baseClasses} bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
+            return `${baseClasses} bg-linear-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
         }
-        return `${baseClasses} border-gray-300 focus:ring-2 focus:ring-[var(--warm-primary)] focus:border-transparent`
+        return `${baseClasses} border-gray-300 focus:ring-2 focus:ring-(--warm-primary) focus:border-transparent`
     }
 
     const handleEmailLogin = async (e: React.FormEvent) => {
@@ -59,11 +59,11 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[var(--warm-primary)] to-[var(--warm-secondary)] rounded-2xl mb-4 shadow-lg">
+                    <Link href="/" className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-2xl mb-4 shadow-lg">
                         <span className="text-3xl">🎨</span>
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
@@ -141,7 +141,7 @@ export default function LoginPage() {
                                 <input type="checkbox" className="mr-2 rounded" />
                                 <span className="text-gray-600">Remember me</span>
                             </label>
-                            <Link href="/forgot-password" className="text-[var(--warm-primary)] hover:underline">
+                            <Link href="/forgot-password" className="text-(--warm-primary) hover:underline">
                                 Forgot password?
                             </Link>
                         </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-gradient-to-r from-[var(--warm-primary)] to-[var(--warm-secondary)] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                            className="w-full py-3 bg-linear-to-r from-(--warm-primary) to-(--warm-secondary) text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
                         >
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
@@ -157,7 +157,7 @@ export default function LoginPage() {
 
                     <p className="mt-6 text-center text-gray-600">
                         Don&apos;t have an account?{' '}
-                        <Link href="/signup" className="text-[var(--warm-primary)] font-semibold hover:underline">
+                        <Link href="/signup" className="text-(--warm-primary) font-semibold hover:underline">
                             Get Started
                         </Link>
                     </p>

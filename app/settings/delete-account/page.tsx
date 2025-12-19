@@ -52,31 +52,20 @@ export default function DeleteAccountPage() {
                 return
             }
 
-            // Delete user data from database (CASCADE will handle related records)
-            const { error: profileError } = await supabase
-                .from('user_profiles')
-                .delete()
-                .eq('user_id', user.id)
+            // Call soft delete RPC
+            const { error: rpcError } = await supabase.rpc('request_account_deletion')
 
-            if (profileError) {
-                console.error('Error deleting profile:', profileError)
-                // Continue anyway as we want to delete the auth user
-            }
-
-            // Delete the auth user (this will sign them out)
-            const { error: deleteError } = await supabase.rpc('delete_user')
-
-            if (deleteError) {
-                // If RPC doesn't exist, try the auth method
-                console.error('RPC delete failed, trying auth method:', deleteError)
-
-                // Sign out the user
-                await supabase.auth.signOut()
-
-                setError('Account data deleted. Please contact support to complete account deletion.')
+            if (rpcError) {
+                console.error('Error requesting deletion:', rpcError)
+                // Fallback: If RPC fails (e.g., waiting for migration), verify auth and show manual message
+                // For now, we assume migration is applied.
+                setError(rpcError.message || 'Failed to process deletion request')
                 setDeleting(false)
                 return
             }
+
+            // Sign out the user
+            await supabase.auth.signOut()
 
             // Success - redirect to home
             router.push('/?deleted=true')
@@ -90,7 +79,7 @@ export default function DeleteAccountPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[var(--warm-bg-light)] via-white to-[#FFF8F0] py-8 px-4">
+        <div className="min-h-screen bg-linear-to-br from-(--warm-bg-light) via-white to-[#FFF8F0] py-8 px-4">
             <div className="max-w-2xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -101,66 +90,39 @@ export default function DeleteAccountPage() {
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Dashboard
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Delete Account</h1>
-                    <p className="text-gray-600 mt-2">Permanently delete your Artisan Connect account</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Close Account</h1>
+                    <p className="text-gray-600 mt-2">Deactivate your account and schedule it for deletion</p>
                 </div>
 
                 {/* Warning Card */}
                 <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
                     <div className="flex items-start gap-4 mb-6">
-                        <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <AlertTriangle className="w-6 h-6 text-red-600" />
+                        <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+                            <AlertTriangle className="w-6 h-6 text-amber-600" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-900 mb-2">Warning: This action is irreversible</h2>
+                            <h2 className="text-xl font-semibold text-gray-900 mb-2">Account Deactivation & Deletion</h2>
                             <p className="text-gray-600">
-                                Deleting your account will permanently remove all your data from our servers. This cannot be undone.
+                                This action will immediately <strong>deactivate</strong> your account. Your public profile will be hidden, and you won't be able to log in.
                             </p>
                         </div>
                     </div>
 
-                    {/* What will be deleted */}
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
-                        <h3 className="font-semibold text-gray-900 mb-3">The following data will be permanently deleted:</h3>
+                    {/* What happens next */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6">
+                        <h3 className="font-semibold text-gray-900 mb-3">What happens next:</h3>
                         <ul className="space-y-2 text-gray-700">
                             <li className="flex items-start gap-2">
-                                <span className="text-red-500 mt-1">•</span>
-                                <span>Your profile information and account settings</span>
+                                <span className="text-amber-500 mt-1">•</span>
+                                <span><strong>30-Day Cooling-Off Period:</strong> Your data will be retained for 30 days in case you change your mind or for dispute resolution.</span>
                             </li>
                             <li className="flex items-start gap-2">
-                                <span className="text-red-500 mt-1">•</span>
-                                <span>Your artisan profile and portfolio (if applicable)</span>
+                                <span className="text-amber-500 mt-1">•</span>
+                                <span><strong>Permanent Deletion:</strong> After 30 days, your personal data will be permanently deleted or anonymized in accordance with our retention policy.</span>
                             </li>
                             <li className="flex items-start gap-2">
-                                <span className="text-red-500 mt-1">•</span>
-                                <span>All reviews you've written</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500 mt-1">•</span>
-                                <span>Your contact history and messages</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-red-500 mt-1">•</span>
-                                <span>Your saved favorites and preferences</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Alternative options */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-                        <h3 className="font-semibold text-gray-900 mb-2">Consider these alternatives:</h3>
-                        <ul className="space-y-2 text-gray-700">
-                            <li className="flex items-start gap-2">
-                                <span className="text-blue-500 mt-1">•</span>
-                                <span>Update your privacy settings instead</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-blue-500 mt-1">•</span>
-                                <span>Temporarily deactivate your artisan profile (if applicable)</span>
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <span className="text-blue-500 mt-1">•</span>
-                                <span>Contact support if you have concerns about your account</span>
+                                <span className="text-amber-500 mt-1">•</span>
+                                <span><strong>Legal Retention:</strong> We may retain certain transaction records and logs as required by law (e.g., for fraud prevention or tax purposes).</span>
                             </li>
                         </ul>
                     </div>
@@ -184,7 +146,7 @@ export default function DeleteAccountPage() {
                             className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-all flex items-center justify-center gap-2"
                         >
                             <Trash2 className="w-5 h-5" />
-                            Delete My Account
+                            Deactivate & Delete
                         </button>
                     </div>
                 </div>
@@ -205,9 +167,9 @@ export default function DeleteAccountPage() {
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <AlertTriangle className="w-8 h-8 text-red-600" />
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Account Deletion</h3>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">Confirm Deactivation</h3>
                             <p className="text-gray-600">
-                                Enter your password to confirm you want to permanently delete your account.
+                                Enter your password to confirm deactivation. You can recover your account by contacting support within 30 days.
                             </p>
                         </div>
 
@@ -241,12 +203,12 @@ export default function DeleteAccountPage() {
                                 {deleting ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        Deleting...
+                                        Processing...
                                     </>
                                 ) : (
                                     <>
                                         <Trash2 className="w-5 h-5" />
-                                        Delete Forever
+                                        Confirm
                                     </>
                                 )}
                             </button>

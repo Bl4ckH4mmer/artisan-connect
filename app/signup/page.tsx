@@ -13,9 +13,9 @@ const getInputClassName = (fieldName: string, value: string, focusedField: strin
     const baseClasses = 'w-full px-4 py-3 border rounded-xl focus:outline-none transition-all'
 
     if (isActive) {
-        return `${baseClasses} bg-gradient-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
+        return `${baseClasses} bg-linear-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60`
     }
-    return `${baseClasses} border-gray-300 focus:ring-2 focus:ring-[var(--warm-primary)] focus:border-transparent`
+    return `${baseClasses} border-gray-300 focus:ring-2 focus:ring-(--warm-primary) focus:border-transparent`
 }
 
 export default function SignupPage() {

@@ -33,6 +33,7 @@ export interface ArtisanProfile {
     rating: number;
     total_reviews: number;
     total_contacts: number;
+    total_views: number;
 
     // Timestamps
     created_at: string;

@@ -63,8 +63,8 @@ export default async function DashboardPage() {
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Welcome Section */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <div className="mb-6 sm:mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         Welcome back, {displayName}! 👋
                     </h1>
                     <p className="text-gray-600">
@@ -77,49 +77,65 @@ export default async function DashboardPage() {
                     {/* Browse Artisans */}
                     <Link
                         href="/search"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
-                        <div className="w-12 h-12 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">🔍</span>
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-linear-to-br from-(--warm-primary) to-(--warm-secondary) rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                                <span className="text-2xl">🔍</span>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-900 mb-1">Browse Artisans</h3>
+                                <p className="text-gray-600 text-sm">Find skilled artisans for your projects</p>
+                            </div>
                         </div>
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Browse Artisans</h3>
-                        <p className="text-gray-600 text-sm">Find skilled artisans for your projects</p>
                     </Link>
 
                     {/* Favorites */}
                     <Link
                         href="/dashboard/favorites"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
-                        <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Heart className="w-6 h-6 text-pink-500" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                                <Heart className="w-6 h-6 text-pink-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-900 mb-1">Saved Artisans</h3>
+                                <p className="text-gray-600 text-sm">View your favorite artisans</p>
+                            </div>
                         </div>
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Saved Artisans</h3>
-                        <p className="text-gray-600 text-sm">View your favorite artisans</p>
                     </Link>
 
                     {/* Messages */}
                     <Link
                         href="/messages"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <MessageSquare className="w-6 h-6 text-blue-500" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                                <MessageSquare className="w-6 h-6 text-blue-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-900 mb-1">Messages</h3>
+                                <p className="text-gray-600 text-sm">Chat with artisans</p>
+                            </div>
                         </div>
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2">Messages</h3>
-                        <p className="text-gray-600 text-sm">Chat with artisans</p>
                     </Link>
 
                     {/* My Reviews */}
                     <Link
                         href="/dashboard/reviews"
-                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group"
+                        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 group card-hover"
                     >
-                        <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Star className="w-6 h-6 text-yellow-500" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                                <Star className="w-6 h-6 text-yellow-500" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-900 mb-1">My Reviews</h3>
+                                <p className="text-gray-600 text-sm">Manage your artisan reviews</p>
+                            </div>
                         </div>
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2">My Reviews</h3>
-                        <p className="text-gray-600 text-sm">Manage your artisan reviews</p>
                     </Link>
                 </div>
 

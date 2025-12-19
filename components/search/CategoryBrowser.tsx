@@ -1,6 +1,6 @@
 'use client'
 
-import { ARTISAN_CATEGORIES, CATEGORY_ICONS } from '@/lib/constants/categories'
+import { ARTISAN_CATEGORIES, CATEGORY_ICONS, CATEGORY_IMAGES } from '@/lib/constants/categories'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -12,16 +12,6 @@ interface CategoryBrowserProps {
 export default function CategoryBrowser({ selectedCategory, onCategorySelect }: CategoryBrowserProps) {
     // Show only first 4 categories on main page
     const displayedCategories = ARTISAN_CATEGORIES.slice(0, 4)
-
-    // Map categories to their specific image files
-    const CATEGORY_IMAGES: Record<string, string> = {
-        'Electrician': '/categories/electrical.png',
-        'Plumber': '/categories/plumbing.png',
-        'Mechanic (Auto)': '/categories/mechanic.png',
-        'Generator Repair': '/categories/generator.png',
-        'Carpenter': '/categories/carpentry.png',
-        'Painter': '/categories/painting.png',
-    }
 
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -52,14 +42,14 @@ export default function CategoryBrowser({ selectedCategory, onCategorySelect }: 
                             {CATEGORY_IMAGES[category] ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                    src={`${CATEGORY_IMAGES[category]}?v=2`}
+                                    src={`${CATEGORY_IMAGES[category]}?v=3`}
                                     alt={category}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
                                         // Fallback to emoji if image fails
                                         e.currentTarget.style.display = 'none';
                                         e.currentTarget.parentElement!.innerText = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || '🔧';
-                                        e.currentTarget.parentElement!.className = 'w-20 h-20 rounded-full flex items-center justify-center transition-all overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 text-4xl';
+                                        e.currentTarget.parentElement!.className = 'w-20 h-20 rounded-full flex items-center justify-center transition-all overflow-hidden bg-linear-to-br from-gray-100 to-gray-200 text-4xl';
                                     }}
                                 />
                             ) : (
