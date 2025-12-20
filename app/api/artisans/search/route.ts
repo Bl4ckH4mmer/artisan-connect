@@ -97,6 +97,18 @@ export async function GET(request: Request) {
     });
     const artisans = Array.from(allArtisansMap.values());
 
+    // LOG SEARCH (Fire and forget)
+    // We don't await this to keep search fast
+    supabase.from('search_logs').insert({
+        query: location ? `${category || 'all'} in ${location}` : category, // simplistic query representation
+        category: category,
+        results_count: artisans.length,
+        // user_id is hard to get here without auth headers, 
+        // but for market gap aggregating, anonymous logs are fine.
+    }).then(({ error }) => {
+        if (error) console.error('Search Log Error:', error);
+    });
+
     // =====================================================
     // BOOST RANKING ALGORITHM
     // =====================================================

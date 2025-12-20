@@ -30,6 +30,19 @@ export interface EngagementFunnel {
     reviewRate: number
 }
 
+export interface MarketGapMetric {
+    search_term: string
+    search_count: number
+    avg_results: number
+}
+
+export interface TierROIMetric {
+    tier: string
+    avg_views: number
+    avg_contacts: number
+    total_artisans: number
+}
+
 /**
  * Get artisan performance metrics ranked by conversion score
  */
@@ -198,4 +211,79 @@ export async function getEngagementFunnel(): Promise<EngagementFunnel> {
         contactRate: 100, // All signup proxy users have contacted
         reviewRate: firstContact > 0 ? Math.round((reviewSubmission / firstContact) * 100) : 0
     }
+}
+
+/**
+ * Get market gap metrics (High Demand / Low Supply)
+ */
+export async function getMarketGapMetrics(): Promise<MarketGapMetric[]> {
+    const supabase = createClient()
+    const { data: metrics, error } = await supabase.rpc('get_market_gap')
+
+    if (error) {
+        console.error('Error fetching market gap:', error)
+        return []
+    }
+
+    return metrics || []
+}
+
+/**
+ * Get Tier ROI metrics
+ */
+export async function getTierROIMetrics(): Promise<TierROIMetric[]> {
+    const supabase = createClient()
+    const { data: metrics, error } = await supabase.rpc('get_tier_roi')
+
+    if (error) {
+        console.error('Error fetching tier ROI:', error)
+        return []
+    }
+
+    return metrics || []
+}
+
+export interface RecruitmentAlert {
+    zone_category: string
+    search_volume: number
+    avg_results: number
+    alert_level: 'CRITICAL' | 'HIGH'
+}
+
+export interface ChurnRiskArtisan {
+    id: string
+    business_name: string
+    tier: string
+    contact_count: number
+    days_since_last_contact: number
+}
+
+export async function getRecruitmentAlerts(): Promise<RecruitmentAlert[]> {
+    const supabase = createClient()
+    const { data: alerts, error } = await supabase.rpc('get_recruitment_alerts')
+    if (error) {
+        console.error('Error fetching recruitment alerts:', error);
+        return [];
+    }
+    return alerts || [];
+}
+
+export async function getSearchSuccessRate(): Promise<number> {
+    const supabase = createClient()
+    const { data: rate, error } = await supabase.rpc('get_search_success_rate')
+    if (error) {
+        console.error('Error fetching search success rate:', error);
+        return 0;
+    }
+    return Number(rate) || 0;
+}
+
+export async function getChurnRiskArtisans(): Promise<ChurnRiskArtisan[]> {
+    const supabase = createClient()
+    const { data: risks, error } = await supabase.rpc('get_churn_risk_artisans')
+    if (error) {
+        console.error('Error fetching churn risks:', error);
+        return [];
+    }
+    return risks || [];
 }

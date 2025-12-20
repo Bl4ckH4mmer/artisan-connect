@@ -12,11 +12,10 @@ export async function trackProfileView(
 ) {
     try {
         const { error } = await supabase
-            .from('profile_view_events')
+            .from('profile_views')
             .insert({
                 artisan_id: data.artisan_id,
                 viewer_id: data.viewer_id, // nullable
-                source: data.source,
             });
 
         if (error) throw error;

@@ -6,14 +6,23 @@ import { TrendingUp, Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AdminNav from '@/components/admin/AdminNav'
 import ArtisanPerformanceTable from '@/components/admin/ArtisanPerformanceTable'
-import UserEngagementDashboard from '@/components/admin/UserEngagementDashboard'
+import MarketGrowthDashboard from '@/components/admin/MarketGrowthDashboard'
 import {
     getArtisanPerformanceMetrics,
     getUserEngagementMetrics,
     getEngagementFunnel,
+    getMarketGapMetrics,
+    getTierROIMetrics,
+    getRecruitmentAlerts,
+    getSearchSuccessRate,
+    getChurnRiskArtisans,
     ArtisanPerformanceMetrics,
     UserEngagementMetrics,
-    EngagementFunnel
+    EngagementFunnel,
+    MarketGapMetric,
+    TierROIMetric,
+    RecruitmentAlert,
+    ChurnRiskArtisan
 } from '@/lib/admin/analytics-queries'
 
 export default function AnalyticsPage() {
@@ -21,7 +30,7 @@ export default function AnalyticsPage() {
     const supabase = createClient()
 
     const [loading, setLoading] = useState(true)
-    const [activeTab, setActiveTab] = useState<'performance' | 'engagement'>('performance')
+    const [activeTab, setActiveTab] = useState<'market' | 'performance' | 'engagement'>('market')
 
     const [artisanMetrics, setArtisanMetrics] = useState<ArtisanPerformanceMetrics[]>([])
     const [userMetrics, setUserMetrics] = useState<UserEngagementMetrics>({
@@ -40,6 +49,11 @@ export default function AnalyticsPage() {
         contactRate: 0,
         reviewRate: 0
     })
+    const [marketGap, setMarketGap] = useState<MarketGapMetric[]>([])
+    const [tierROI, setTierROI] = useState<TierROIMetric[]>([])
+    const [alerts, setAlerts] = useState<RecruitmentAlert[]>([])
+    const [successRate, setSuccessRate] = useState<number>(0)
+    const [churnRisks, setChurnRisks] = useState<ChurnRiskArtisan[]>([])
 
     useEffect(() => {
         checkAdminAccess()
@@ -60,15 +74,25 @@ export default function AnalyticsPage() {
             setLoading(true)
 
             // Fetch all analytics data
-            const [artisans, engagement, funnel] = await Promise.all([
+            const [artisans, engagement, funnel, gap, roi, alertData, rateData, riskData] = await Promise.all([
                 getArtisanPerformanceMetrics(),
                 getUserEngagementMetrics(),
-                getEngagementFunnel()
+                getEngagementFunnel(),
+                getMarketGapMetrics(),
+                getTierROIMetrics(),
+                getRecruitmentAlerts(),
+                getSearchSuccessRate(),
+                getChurnRiskArtisans()
             ])
 
             setArtisanMetrics(artisans)
             setUserMetrics(engagement)
             setFunnelMetrics(funnel)
+            setMarketGap(gap)
+            setTierROI(roi)
+            setAlerts(alertData)
+            setSuccessRate(rateData)
+            setChurnRisks(riskData)
         } catch (error) {
             console.error('Error fetching analytics:', error)
         } finally {
@@ -96,15 +120,30 @@ export default function AnalyticsPage() {
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Advanced Analytics</h1>
-                    <p className="text-gray-600">Deep insights into artisan performance and user engagement</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Strategic Growth Analytics</h1>
+                    <p className="text-gray-600">Deep insights into market demand, artisan performance, and user engagement</p>
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex gap-4 mb-8 border-b border-gray-200">
+                <div className="flex gap-4 mb-8 border-b border-gray-200 overflow-x-auto">
+                    <button
+                        onClick={() => setActiveTab('market')}
+                        className={`px-6 py-3 font-semibold transition-colors relative whitespace-nowrap ${activeTab === 'market'
+                            ? 'text-orange-600'
+                            : 'text-gray-600 hover:text-gray-900'
+                            }`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />
+                            Market & Growth
+                        </div>
+                        {activeTab === 'market' && (
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600"></div>
+                        )}
+                    </button>
                     <button
                         onClick={() => setActiveTab('performance')}
-                        className={`px-6 py-3 font-semibold transition-colors relative ${activeTab === 'performance'
+                        className={`px-6 py-3 font-semibold transition-colors relative whitespace-nowrap ${activeTab === 'performance'
                             ? 'text-orange-600'
                             : 'text-gray-600 hover:text-gray-900'
                             }`}
@@ -119,7 +158,7 @@ export default function AnalyticsPage() {
                     </button>
                     <button
                         onClick={() => setActiveTab('engagement')}
-                        className={`px-6 py-3 font-semibold transition-colors relative ${activeTab === 'engagement'
+                        className={`px-6 py-3 font-semibold transition-colors relative whitespace-nowrap ${activeTab === 'engagement'
                             ? 'text-orange-600'
                             : 'text-gray-600 hover:text-gray-900'
                             }`}
@@ -135,6 +174,16 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Content */}
+                {activeTab === 'market' && (
+                    <MarketGrowthDashboard
+                        marketGap={marketGap}
+                        tierROI={tierROI}
+                        alerts={alerts}
+                        successRate={successRate}
+                        churnRisks={churnRisks}
+                    />
+                )}
+
                 {activeTab === 'performance' && (
                     <ArtisanPerformanceTable artisans={artisanMetrics} />
                 )}
