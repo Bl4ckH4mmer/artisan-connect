@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { BottomNav } from '@/components/ui/BottomNav'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'Artisan Connect - Find Local Artisans in Nigeria',

@@ -4,10 +4,20 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TrendingUp, Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import dynamic from 'next/dynamic'
 import AdminNav from '@/components/admin/AdminNav'
-import ArtisanPerformanceTable from '@/components/admin/ArtisanPerformanceTable'
-import MarketGrowthDashboard from '@/components/admin/MarketGrowthDashboard'
-import UserEngagementDashboard from '@/components/admin/UserEngagementDashboard'
+
+// Dynamically import heavy dashboard components
+const ArtisanPerformanceTable = dynamic(() => import('@/components/admin/ArtisanPerformanceTable'), {
+    loading: () => <div className="animate-pulse bg-white h-96 rounded-xl shadow-sm" />
+})
+const MarketGrowthDashboard = dynamic(() => import('@/components/admin/MarketGrowthDashboard'), {
+    loading: () => <div className="animate-pulse bg-white h-96 rounded-xl shadow-sm" />
+})
+const UserEngagementDashboard = dynamic(() => import('@/components/admin/UserEngagementDashboard'), {
+    loading: () => <div className="animate-pulse bg-white h-96 rounded-xl shadow-sm" />
+})
+
 import {
     getArtisanPerformanceMetrics,
     getUserEngagementMetrics,

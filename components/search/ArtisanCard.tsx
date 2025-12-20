@@ -44,6 +44,7 @@ export default function ArtisanCard({ artisan }: ArtisanCardProps) {
                             alt={artisan.business_name}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-6xl">

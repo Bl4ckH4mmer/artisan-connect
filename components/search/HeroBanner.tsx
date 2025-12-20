@@ -40,16 +40,20 @@ export default function HeroBanner() {
             {HERO_SLIDES.map((slide, index) => (
                 <div
                     key={index}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 placeholder:z-10' : 'opacity-0 z-0'
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
                         }`}
                 >
-                    <Image
-                        src={slide.image}
-                        alt={slide.title}
-                        fill
-                        className="object-cover"
-                        priority={index === 0}
-                    />
+                    {/* Only render the image if it is the current slide or if it's the first slide (for LCP) */}
+                    {(index === currentSlide || index === 0) && (
+                        <Image
+                            src={slide.image}
+                            alt={slide.title}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                            loading={index === 0 ? undefined : 'lazy'}
+                        />
+                    )}
 
                     {/* Gradient Overlay */}
                     <div className={`absolute inset-0 bg-linear-to-r ${slide.color} via-black/30 to-transparent`} />
