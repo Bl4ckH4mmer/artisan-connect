@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import AdminNav from '@/components/admin/AdminNav'
 import ArtisanPerformanceTable from '@/components/admin/ArtisanPerformanceTable'
 import MarketGrowthDashboard from '@/components/admin/MarketGrowthDashboard'
+import UserEngagementDashboard from '@/components/admin/UserEngagementDashboard'
 import {
     getArtisanPerformanceMetrics,
     getUserEngagementMetrics,
