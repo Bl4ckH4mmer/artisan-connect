@@ -50,10 +50,15 @@ export async function getArtisanPerformanceMetrics(): Promise<ArtisanPerformance
     const supabase = createClient()
 
     // Fetch artisans with their conversion and contact data
-    const { data: artisans } = await supabase
+    const { data: artisans, error: artisanError } = await supabase
         .from('artisan_profiles')
-        .select('id, business_name, category, profile_image_url, rating, total_reviews, total_contacts')
+        .select('id, business_name, category, profile_image_url:profile_image, rating, total_reviews, total_contacts')
         .eq('status', 'active')
+
+    if (artisanError) {
+        console.error('Error fetching artisans for analytics:', artisanError)
+        return []
+    }
 
     if (!artisans) return []
 
