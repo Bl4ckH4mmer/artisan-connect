@@ -25,6 +25,7 @@ function SearchPageContent() {
   const [sortBy, setSortBy] = useState<SortOption>('rating')
   const [showFilters, setShowFilters] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [userProfile, setUserProfile] = useState<{ avatar_url: string | null } | null>(null)
 
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([])
   const [filteredArtisans, setFilteredArtisans] = useState<ArtisanProfile[]>([])
@@ -33,6 +34,22 @@ function SearchPageContent() {
   const [visibleCount, setVisibleCount] = useState(9)
 
   const supabase = createClient()
+
+  // Fetch current user's profile for dynamic avatar
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single()
+        setUserProfile(data)
+      }
+    }
+    fetchProfile()
+  }, [])
 
   const fetchArtisans = async () => {
     setLoading(true)
@@ -112,7 +129,7 @@ function SearchPageContent() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex-1 relative">
               <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${isSearchFocused && searchQuery.length > 0 ? 'text-white/70' : 'text-gray-400'}`} />
               <input
@@ -125,40 +142,38 @@ function SearchPageContent() {
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${isSearchFocused && searchQuery.length > 0 ? 'bg-linear-to-r from-[#C75B39] to-[#D97642] text-white border-[#C75B39] placeholder-white/60' : 'bg-[#FAF7F2] border-transparent focus:border-[#C75B39] focus:bg-white'}`}
               />
             </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="relative px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"
-            >
-              <Filter className="w-5 h-5" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#C75B39] text-white text-xs rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <a
-              href="/dashboard"
-              className="p-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl transition-all hidden md:flex items-center justify-center"
-              title="Go to Dashboard"
-            >
-              <User className="w-5 h-5" />
-            </a>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="relative px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"
-            >
-              <Filter className="w-5 h-5" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#C75B39] text-white text-xs rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
+            {/* Consolidated Action Buttons */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="relative px-3 sm:px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:text-[#C75B39] hover:bg-[#FFF8F0] rounded-xl flex items-center gap-2 font-medium transition-all"
+              >
+                <Filter className="w-5 h-5" />
+                <span className="hidden sm:inline">Filters</span>
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#C75B39] text-white text-xs rounded-full flex items-center justify-center">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+
+              <a
+                href="/dashboard"
+                className="w-12 h-12 bg-white border-2 border-gray-200 text-gray-700 hover:border-[#C75B39] hover:bg-[#FFF8F0] rounded-xl transition-all flex items-center justify-center overflow-hidden"
+                title="Go to Dashboard"
+              >
+                {userProfile?.avatar_url ? (
+                  <img
+                    src={userProfile.avatar_url}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-6 h-6" />
+                )}
+              </a>
+            </div>
           </div>
 
           {/* Filters Panel */}
