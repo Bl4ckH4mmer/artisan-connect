@@ -25,7 +25,7 @@ function SearchPageContent() {
   const [sortBy, setSortBy] = useState<SortOption>('rating')
   const [showFilters, setShowFilters] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const [userProfile, setUserProfile] = useState<{ avatar_url: string | null } | null>(null)
+  const [userProfile, setUserProfile] = useState<{ avatar_url: string | null; full_name: string | null } | null>(null)
 
   const [artisans, setArtisans] = useState<ArtisanProfile[]>([])
   const [filteredArtisans, setFilteredArtisans] = useState<ArtisanProfile[]>([])
@@ -42,7 +42,7 @@ function SearchPageContent() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('avatar_url')
+          .select('avatar_url, full_name')
           .eq('id', user.id)
           .single()
         setUserProfile(data)
@@ -169,6 +169,15 @@ function SearchPageContent() {
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
+                ) : userProfile?.full_name ? (
+                  <div className="w-full h-full bg-[#FAF7F2] text-[#C75B39] flex items-center justify-center font-bold text-lg">
+                    {userProfile.full_name
+                      .split(' ')
+                      .map(n => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)}
+                  </div>
                 ) : (
                   <User className="w-6 h-6" />
                 )}
