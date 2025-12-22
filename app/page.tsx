@@ -14,14 +14,14 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
             href="/signup"
-            className="px-8 py-4 bg-linear-to-r from-[#C75B39] to-[#D97642] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="px-8 py-4 btn-reverse-fill rounded-xl font-semibold shadow-sm transition-all"
           >
             Get Started
           </a>
 
           <a
             href="/search"
-            className="px-8 py-4 border-2 border-[#C75B39] text-[#C75B39] rounded-xl font-semibold hover:bg-[#FAF7F2] transition-all"
+            className="px-8 py-4 btn-fill-middle rounded-xl font-semibold shadow-sm transition-all text-center"
           >
             Browse Artisans
           </a>

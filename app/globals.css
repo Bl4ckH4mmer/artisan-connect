@@ -4,6 +4,7 @@
   .card-hover {
     @apply transition-all duration-300 ease-in-out;
   }
+
   .card-hover:hover {
     @apply -translate-y-1 shadow-lg shadow-neutral-200/50 dark:shadow-neutral-900/50;
   }
@@ -17,24 +18,37 @@
      WARM PALETTE (Customer-Facing)
      Artisan marketplace, craftsmanship, authenticity
      ======================================== */
-  --warm-primary: #C75B39;        /* Terracotta - Primary CTAs, highlights */
-  --warm-secondary: #D97642;      /* Burnt orange - Secondary actions, hover */
-  --warm-accent: #E89560;         /* Peach-orange - Accents, badges */
-  --warm-bg-light: #FAF7F2;       /* Cream - Page backgrounds */
-  --warm-bg-card: #FFFFFF;        /* White - Card backgrounds */
-  --warm-text-dark: #6B4423;      /* Brown - Primary text */
-  --warm-text-medium: #8B4513;    /* Medium brown - Secondary text */
+  --warm-primary: #C75B39;
+  /* Terracotta - Primary CTAs, highlights */
+  --warm-secondary: #D97642;
+  /* Burnt orange - Secondary actions, hover */
+  --warm-accent: #E89560;
+  /* Peach-orange - Accents, badges */
+  --warm-bg-light: #FAF7F2;
+  /* Cream - Page backgrounds */
+  --warm-bg-card: #FFFFFF;
+  /* White - Card backgrounds */
+  --warm-text-dark: #6B4423;
+  /* Brown - Primary text */
+  --warm-text-medium: #8B4513;
+  /* Medium brown - Secondary text */
 
   /* ========================================
      BLUE PALETTE (Business/Admin)
      Trust, professionalism, stability
      ======================================== */
-  --blue-primary: #1E3A8A;        /* Navy - Headers, navigation */
-  --blue-accent: #3B82F6;         /* Bright blue - Primary CTAs, links */
-  --blue-light: #DBEAFE;          /* Light blue - Backgrounds, highlights */
-  --blue-dark: #1F2937;           /* Dark grey-blue - Text, headings */
-  --blue-bg: #F3F4F6;             /* Light grey - Page backgrounds */
-  --blue-bg-light: #EFF6FF;       /* Very light blue - Subtle backgrounds */
+  --blue-primary: #1E3A8A;
+  /* Navy - Headers, navigation */
+  --blue-accent: #3B82F6;
+  /* Bright blue - Primary CTAs, links */
+  --blue-light: #DBEAFE;
+  /* Light blue - Backgrounds, highlights */
+  --blue-dark: #1F2937;
+  /* Dark grey-blue - Text, headings */
+  --blue-bg: #F3F4F6;
+  /* Light grey - Page backgrounds */
+  --blue-bg-light: #EFF6FF;
+  /* Very light blue - Subtle backgrounds */
 
   /* ========================================
      NEUTRAL PALETTE (Shared)
@@ -130,12 +144,14 @@ textarea::placeholder {
     -webkit-text-fill-color: #9ca3af !important;
   }
 }
+
 /* Toast animations */
 @keyframes slide-in-right {
   from {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -144,4 +160,51 @@ textarea::placeholder {
 
 .animate-slide-in-right {
   animation: slide-in-right 0.3s ease-out;
+}
+
+/* Premium Button Interactions */
+.btn-fill-middle {
+  @apply relative overflow-hidden z-10 transition-colors duration-500 border-2 border-[#C75B39] text-[#C75B39] bg-transparent;
+}
+
+.btn-fill-middle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  @apply bg-[#C75B39] -z-10 transition-all duration-500 rounded-full transform -translate-x-1/2 -translate-y-1/2;
+}
+
+.btn-fill-middle:hover::before {
+  width: 150%;
+  padding-bottom: 150%;
+}
+
+.btn-fill-middle:hover {
+  @apply text-white;
+}
+
+.btn-reverse-fill {
+  @apply relative overflow-hidden z-10 transition-colors duration-500 bg-[#C75B39] text-white border-2 border-[#C75B39];
+}
+
+.btn-reverse-fill::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  @apply bg-white -z-10 transition-all duration-500 rounded-full transform -translate-x-1/2 -translate-y-1/2;
+}
+
+.btn-reverse-fill:hover::before {
+  width: 150%;
+  padding-bottom: 150%;
+}
+
+.btn-reverse-fill:hover {
+  @apply text-[#C75B39];
 }
