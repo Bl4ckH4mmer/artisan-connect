@@ -153,16 +153,7 @@ function SearchPageContent() {
 
   const activeFiltersCount = [selectedCategory, selectedZone].filter(Boolean).length
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-[#C75B39] border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-gray-600">Finding local artisans...</p>
-        </div>
-      </div>
-    )
-  }
+  // Main UI components rendered with conditional loading for data-dependent sections
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
@@ -302,8 +293,19 @@ function SearchPageContent() {
         )}
 
         {/* Featured Artisans */}
-        {!searchQuery && !selectedCategory && !selectedZone && featuredArtisans.length > 0 && (
-          <FeaturedArtisans artisans={featuredArtisans} />
+        {!searchQuery && !selectedCategory && !selectedZone && (
+          loading ? (
+            <div className="bg-white rounded-2xl p-6 shadow-sm animate-pulse">
+              <div className="h-8 w-48 bg-gray-200 rounded-lg mb-6" />
+              <div className="flex gap-4 overflow-hidden">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="shrink-0 w-64 h-72 bg-gray-100 rounded-xl" />
+                ))}
+              </div>
+            </div>
+          ) : featuredArtisans.length > 0 ? (
+            <FeaturedArtisans artisans={featuredArtisans} />
+          ) : null
         )}
 
         {/* Category Browser */}
@@ -351,7 +353,20 @@ function SearchPageContent() {
         )}
 
         {/* Artisans Grid */}
-        {filteredArtisans.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-xl h-[400px] shadow-sm animate-pulse">
+                <div className="w-full h-48 bg-gray-200" />
+                <div className="p-5 space-y-3">
+                  <div className="h-6 w-3/4 bg-gray-200 rounded" />
+                  <div className="h-4 w-1/2 bg-gray-100 rounded" />
+                  <div className="h-4 w-1/3 bg-gray-100 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredArtisans.length === 0 ? (
           <div className="bg-white rounded-xl p-12 text-center shadow-sm">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">No artisans found</h3>
