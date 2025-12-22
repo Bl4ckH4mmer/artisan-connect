@@ -39,14 +39,54 @@ function SearchPageContent() {
   useEffect(() => {
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
+      if (!user) return
+
+      let avatar = null
+      let name = null
+
+      // 1. Check Auth Metadata (Google etc)
+      avatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+      name = user.user_metadata?.full_name || user.user_metadata?.name || null
+
+      // 2. Check profiles table (custom user profiles)
+      if (!avatar || !name) {
+        const { data: profile } = await supabase
           .from('profiles')
           .select('avatar_url, full_name')
           .eq('id', user.id)
-          .single()
-        setUserProfile(data)
+          .maybeSingle()
+
+        if (profile) {
+          avatar = avatar || profile.avatar_url
+          name = name || profile.full_name
+        }
       }
+
+      // 3. Check artisan_profiles (if user is an artisan)
+      if (!avatar || !name) {
+        const { data: artisan } = await supabase
+          .from('artisan_profiles')
+          .select('profile_image_url, artisan_name')
+          .eq('user_id', user.id)
+          .maybeSingle()
+
+        if (artisan) {
+          avatar = avatar || artisan.profile_image_url
+          name = name || artisan.artisan_name
+        }
+      }
+
+      // 4. Check user_profiles (last resort for name)
+      if (!name) {
+        const { data: up } = await supabase
+          .from('user_profiles')
+          .select('full_name')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        if (up) name = up.full_name
+      }
+
+      setUserProfile({ avatar_url: avatar, full_name: name })
     }
     fetchProfile()
   }, [])

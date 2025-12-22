@@ -11,30 +11,66 @@ import { useEffect, useState } from 'react';
 export function BottomNav() {
     const pathname = usePathname();
     const [profileLink, setProfileLink] = useState('/login');
+    const [userProfile, setUserProfile] = useState<{ avatar_url: string | null; full_name: string | null } | null>(null)
 
     if (pathname?.startsWith('/admin')) {
         return null;
     }
 
     useEffect(() => {
-        async function getProfileLink() {
+        async function loadProfile() {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user) {
+                setProfileLink('/login');
+                setUserProfile(null);
+                return;
+            }
 
+            // 1. Fetch linkage for dashboard
             const { data: profile } = await supabase
                 .from('user_profiles')
-                .select('is_artisan')
+                .select('is_artisan, full_name')
                 .eq('user_id', user.id)
-                .single();
+                .maybeSingle();
 
             if (profile?.is_artisan) {
                 setProfileLink('/artisan/dashboard');
             } else {
                 setProfileLink('/dashboard');
             }
+
+            // 2. Fetch avatar data with fail-safe fallbacks
+            let avatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
+            let name = user.user_metadata?.full_name || user.user_metadata?.name || profile?.full_name || null;
+
+            if (!avatar || !name) {
+                const { data: p } = await supabase
+                    .from('profiles')
+                    .select('avatar_url, full_name')
+                    .eq('id', user.id)
+                    .maybeSingle();
+                if (p) {
+                    avatar = avatar || p.avatar_url;
+                    name = name || p.full_name;
+                }
+            }
+
+            if (!avatar || !name) {
+                const { data: artisan } = await supabase
+                    .from('artisan_profiles')
+                    .select('profile_image_url, artisan_name')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+                if (artisan) {
+                    avatar = avatar || artisan.profile_image_url;
+                    name = name || artisan.artisan_name;
+                }
+            }
+
+            setUserProfile({ avatar_url: avatar, full_name: name });
         }
-        getProfileLink();
+        loadProfile();
     }, []);
 
     const navItems = [
@@ -79,14 +115,33 @@ export function BottomNav() {
                                 'flex flex-col items-center justify-center gap-1 rounded-xl px-4 py-1.5 transition-all duration-300',
                                 isActive
                                     ? 'text-[#C75B39] scale-105'
-                                    : 'text-[#8B735B] hover:text-[#5A4030]' // Earthy brown tones instead of gray/black
+                                    : 'text-[#8B735B] hover:text-[#5A4030]'
                             )}
                         >
-                            <Icon
-                                className={cn('h-6 w-6 transition-all duration-300', isActive && '-translate-y-0.5')}
-                                fill={isActive ? 'currentColor' : 'none'}
-                                strokeWidth={isActive ? 2.5 : 2}
-                            />
+                            {item.name === 'Profile' && userProfile ? (
+                                <div className={cn(
+                                    "h-6 w-6 rounded-full overflow-hidden border transition-all duration-300",
+                                    isActive ? "border-[#C75B39]" : "border-transparent"
+                                )}>
+                                    {userProfile.avatar_url ? (
+                                        <img
+                                            src={userProfile.avatar_url}
+                                            alt="User"
+                                            className="h-full w-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="h-full w-full bg-[#FAF7F2] text-[#C75B39] flex items-center justify-center text-[10px] font-bold uppercase">
+                                            {userProfile.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <Icon
+                                    className={cn('h-6 w-6 transition-all duration-300', isActive && '-translate-y-0.5')}
+                                    fill={isActive ? 'currentColor' : 'none'}
+                                    strokeWidth={isActive ? 2.5 : 2}
+                                />
+                            )}
                             <span className="text-[10px] font-medium tracking-wide">{item.name}</span>
                         </Link>
                     );
